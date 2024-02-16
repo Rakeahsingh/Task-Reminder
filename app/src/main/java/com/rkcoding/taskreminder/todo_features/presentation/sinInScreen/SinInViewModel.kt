@@ -39,7 +39,10 @@ class SinInViewModel @Inject constructor(): ViewModel(){
                                 duration = SnackbarDuration.Short
                             )
                         )
-                    }catch (e: Exception){
+                        _snackBarEvent.send(
+                            SnackBarEvent.Navigate
+                        )
+                    } catch (e: Exception) {
                         _snackBarEvent.send(
                             SnackBarEvent.ShowSnackBar(
                                 message = "SinIn Successfully",

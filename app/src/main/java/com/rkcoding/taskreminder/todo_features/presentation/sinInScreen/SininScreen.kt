@@ -65,27 +65,26 @@ fun SinInScreen(
     )
 
 
-//    LaunchedEffect(key1 = state.isSinInSuccess){
-//        viewModel.snackBarEvent.collectLatest { event ->
-//            when(event){
-//                SnackBarEvent.NavigateUp -> Unit
-//
-//                is SnackBarEvent.ShowSnackBar -> {
-//                    SnackBarEvent.ShowSnackBar(
-//                        message = event.message,
-//                        duration = event.duration
-//                    )
-//                }
-//
-//                SnackBarEvent.Navigate -> {
-//                    navController.navigate(Screen.TaskListScreen.route)
-//                }
-//
-//            }
-//        }
-////        Toast.makeText(context, "SinIn Successfully", Toast.LENGTH_SHORT).show()
-//////        navController.navigate(Screen.TaskListScreen.route)
-//    }
+    LaunchedEffect(key1 = true){
+        viewModel.snackBarEvent.collectLatest { event ->
+            when(event){
+                SnackBarEvent.NavigateUp -> Unit
+
+                is SnackBarEvent.ShowSnackBar -> {
+                    SnackBarEvent.ShowSnackBar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+
+                SnackBarEvent.Navigate -> {
+                    navController.navigate(Screen.TaskListScreen.route)
+                }
+
+            }
+        }
+
+    }
 
 
     Column(
