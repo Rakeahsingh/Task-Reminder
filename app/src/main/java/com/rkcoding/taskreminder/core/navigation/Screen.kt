@@ -6,4 +6,6 @@ sealed class Screen(val route: String) {
 
     data object TaskListScreen: Screen("TaskListScreen")
 
+    data object AddTaskScreen: Screen("AddTaskScreen")
+
 }

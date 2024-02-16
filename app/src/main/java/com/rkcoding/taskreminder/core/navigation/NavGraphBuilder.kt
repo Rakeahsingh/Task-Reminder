@@ -21,6 +21,7 @@ import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInEve
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInScreen
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInViewModel
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
+import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.AddTaskScreen
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.TaskListScreen
 import kotlinx.coroutines.launch
 
@@ -48,37 +49,9 @@ fun NavGraphBuilder() {
     ){
 
         composable(Screen.SinInScreen.route){
-//            val viewModel = hiltViewModel<SinInViewModel>()
-//            val state by viewModel.state.collectAsState()
-
-//            val launcher = rememberLauncherForActivityResult(
-//                contract = ActivityResultContracts.StartIntentSenderForResult(),
-//                onResult = { result ->
-//                    if(result.resultCode == RESULT_OK) {
-//                        scope.launch {
-//                            val signInResult = googleAuthUiClient.sinInWithIntent(
-//                                intent = result.data ?: return@launch
-//                            )
-//                            viewModel.onEvent(SinInEvent.SinInButtonClick(signInResult))
-//                        }
-//                    }
-//                }
-//            )
-
 
             SinInScreen(
-                navController = navController,
-//                state = state,
-//                onSinInClick = {
-////                    scope.launch {
-////                        val sinInIntentSender = googleAuthUiClient.sinIn()
-////                        launcher.launch(
-////                            IntentSenderRequest.Builder(
-////                                sinInIntentSender ?: return@launch
-////                            ).build()
-////                        )
-////                    }
-//                }
+                navController = navController
             )
         }
 
@@ -89,15 +62,16 @@ fun NavGraphBuilder() {
                 onSinOut = {
                     scope.launch {
                         googleAuthUiClient.sinOut()
-//                        SnackBarEvent.ShowSnackBar(
-//                            message = "SinOut Successfully",
-//                            duration = SnackbarDuration.Short
-//                        )
                         Toast.makeText(context, "SinOut Successfully", Toast.LENGTH_SHORT).show()
                         navController.popBackStack()
                     }
-                }
+                },
+                navController = navController
             )
+        }
+
+        composable(Screen.AddTaskScreen.route){
+            AddTaskScreen(navController = navController)
         }
 
     }
