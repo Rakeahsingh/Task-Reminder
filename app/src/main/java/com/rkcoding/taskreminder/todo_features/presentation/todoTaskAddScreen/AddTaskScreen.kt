@@ -26,6 +26,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.PriorityBottomSheet
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskDatePicker
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskTimePicker
@@ -49,31 +52,34 @@ import java.time.Instant
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: AddTaskViewModel = hiltViewModel()
 ) {
+
+    val state by viewModel.state.collectAsState()
 
     val priority = listOf(
         "Low", "Medium", "High"
     )
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+//    var title by remember { mutableStateOf("") }
+//    var description by remember { mutableStateOf("") }
     var isTitleError by rememberSaveable { mutableStateOf<String?>(null) }
     var isDescriptionError by rememberSaveable { mutableStateOf<String?>(null) }
 
     // title error text
     isTitleError = when{
-        title.isBlank() -> "Please Enter Task Title"
-        title.length < 4 -> "Task Title is too Short"
-        title.length > 20 -> "Task Title is too Long"
+        state.title.isBlank() -> "Please Enter Task Title"
+        state.title.length < 4 -> "Task Title is too Short"
+        state.title.length > 20 -> "Task Title is too Long"
         else -> null
     }
 
     // description error text
     isDescriptionError = when{
-        description.isBlank() -> "Please Enter Task Description"
-        description.length < 8 -> "Task Description is too Short"
-        description.length > 100 -> "Task Description is too Long"
+        state.description.isBlank() -> "Please Enter Task Description"
+        state.description.length < 8 -> "Task Description is too Short"
+        state.description.length > 100 -> "Task Description is too Long"
         else -> null
     }
 
@@ -126,6 +132,7 @@ fun AddTaskScreen(
         isDialogOpen = datePickerDialog,
         onDismissRequest = { datePickerDialog = false },
         onConfirmButtonClick = {
+            viewModel.onEvent(AddTaskEvent.OnDueDateChange(date = datePickerState.selectedDateMillis))
             datePickerDialog = false
         }
     )
@@ -137,6 +144,7 @@ fun AddTaskScreen(
         title = "Select Time!",
         onDismissRequest = { timePickerDialog = false },
         onConfirmButtonClick = {
+            viewModel.onEvent(AddTaskEvent.OnDueTimeChange(millis = selectedHour.toLong()))
             timePickerDialog = false
         }
     )
@@ -148,8 +156,12 @@ fun AddTaskScreen(
                 isComplete = true,
                 checkBoxBorderColor = Color.Red,
                 onBackIconClick = { navController.popBackStack() },
-                onCheckBoxClick = { /*TODO*/ },
-                onDeleteIconClick = {  }
+                onCheckBoxClick = {
+                    viewModel.onEvent(AddTaskEvent.IsTaskCompleted)
+                },
+                onDeleteIconClick = {
+                    viewModel.onEvent(AddTaskEvent.DeleteTask)
+                }
             )
         }
     ) { paddingValues ->
@@ -162,11 +174,13 @@ fun AddTaskScreen(
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = title,
-                onValueChange = { title = it },
+                value = state.title,
+                onValueChange = {
+                    viewModel.onEvent(AddTaskEvent.OnTitleChange(it))
+                },
                 label = { Text(text = "Title") },
                 singleLine = true,
-                isError = isTitleError != null && title.isNotBlank(),
+                isError = isTitleError != null && state.title.isNotBlank(),
                 supportingText = { Text(text = isTitleError.orEmpty()) }
             )
 
@@ -174,11 +188,13 @@ fun AddTaskScreen(
 
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = description,
-                onValueChange = { description = it },
+                value = state.description,
+                onValueChange = {
+                    viewModel.onEvent(AddTaskEvent.OnDescriptionChange(it))
+                },
                 label = { Text(text = "Description") },
                 singleLine = true,
-                isError = isDescriptionError != null && description.isNotBlank(),
+                isError = isDescriptionError != null && state.description.isNotBlank(),
                 supportingText = { Text(text = isDescriptionError.orEmpty()) }
             )
 
@@ -193,7 +209,7 @@ fun AddTaskScreen(
             ) {
 
                 Text(
-                    text = "17 Feb 2024",
+                    text = state.dueDate.toDateFormat(),
                     style = MaterialTheme.typography.bodyLarge,
                     fontStyle = FontStyle.Italic
                 )
@@ -253,7 +269,7 @@ fun AddTaskScreen(
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { viewModel.onEvent(AddTaskEvent.SaveTask) },
                 enabled = isTitleError == null && isDescriptionError == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CustomBlue,
