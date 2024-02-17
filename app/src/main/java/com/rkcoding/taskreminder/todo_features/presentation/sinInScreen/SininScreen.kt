@@ -1,7 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.presentation.sinInScreen
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,8 +30,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SinInScreen(
-//    state: SinInState,
-//    onSinInClick: () -> Unit,
     navController: NavController,
     viewModel: SinInViewModel = hiltViewModel()
 ) {
@@ -65,7 +62,7 @@ fun SinInScreen(
     )
 
 
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = state.isSinInSuccess){
         viewModel.snackBarEvent.collectLatest { event ->
             when(event){
                 SnackBarEvent.NavigateUp -> Unit

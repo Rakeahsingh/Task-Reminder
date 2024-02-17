@@ -96,4 +96,7 @@ dependencies {
     // coil imageLoader
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    //Icons
+    implementation ("androidx.compose.material:material-icons-extended:1.6.1")
+
 }
