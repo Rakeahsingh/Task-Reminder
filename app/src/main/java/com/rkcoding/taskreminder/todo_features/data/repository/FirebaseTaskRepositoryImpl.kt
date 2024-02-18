@@ -37,7 +37,7 @@ class FirebaseTaskRepositoryImpl(
                     title = document.getString("title") ?: "",
                     description = document.getString("description") ?: "",
                     dueDate = document.getLong("dueDate") ?: 0L,
-                    dueTime = document.getLong("dueTime") ?: 0L,
+                    dueTime = document.getString("dueTime") ?: "",
                     priority = document.getString("priority")?.toInt() ?: 1,
                     isCompleted = document.getBoolean("isCompleted") ?: false
                 )
@@ -86,7 +86,7 @@ class FirebaseTaskRepositoryImpl(
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L
-                val dueTime = document.getLong("dueTime") ?: 0L
+                val dueTime = document.getString("dueTime") ?: ""
                 val priority = document.getString("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
 
@@ -122,7 +122,7 @@ class FirebaseTaskRepositoryImpl(
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L
-                val dueTime = document.getLong("dueTime") ?: 0L
+                val dueTime = document.getString("dueTime") ?: ""
                 val priority = document.getString("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
 

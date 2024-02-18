@@ -11,7 +11,7 @@ data class AddTaskState(
     val title: String = "",
     val description: String = "",
     val dueDate: Long? = null,
-    val dueTime: Long? = null,
+    val dueTime: String? = null,
     val priority: Priority = Priority.LOW,
     val isTaskCompleted: Boolean = false,
     val tasks: List<Task> = emptyList()
@@ -21,7 +21,7 @@ enum class Priority(val title: String, val color: Color, val value: Int){
 
     LOW("Low", CustomGreen, 0),
     MEDIUM("Medium", Orange, 1),
-    HIGH("High", CustomRed,2);
+    HIGH("High", Color.Red,2);
 
     companion object{
         fun fromInt(value: Int) = entries.firstOrNull(){ it.value == value } ?: MEDIUM

@@ -25,7 +25,7 @@ class AddTaskViewModel @Inject constructor(
     fun onEvent(event: AddTaskEvent){
         when(event){
             AddTaskEvent.DeleteTask -> {
-                TODO()
+
             }
             AddTaskEvent.IsTaskCompleted -> {
                 _state.update {
@@ -70,7 +70,7 @@ class AddTaskViewModel @Inject constructor(
                 }
             }
             AddTaskEvent.SaveTask -> {
-                TODO()
+
             }
         }
     }

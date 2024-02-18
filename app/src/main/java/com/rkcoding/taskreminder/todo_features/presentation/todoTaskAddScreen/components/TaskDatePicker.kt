@@ -27,7 +27,7 @@ fun TaskDatePicker(
             onDismissRequest = { onDismissRequest() },
             confirmButton = {
                 TextButton(onClick = { onConfirmButtonClick() }) {
-                    Text(text = "Cancel")
+                    Text(text = "OK")
                 }
             },
             dismissButton = {
