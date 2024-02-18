@@ -45,8 +45,9 @@ class FirebaseTaskRepositoryImpl(
     }
 
     override suspend fun addTask(task: Task) {
+        val userId = firebaseAuth.currentUser?.uid ?: return
         fireStore.collection("users")
-            .document(firebaseAuth.currentUser?.uid!!)
+            .document(userId)
             .collection("tasks")
             .document(task.taskId.toString())
             .set(task, SetOptions.merge())

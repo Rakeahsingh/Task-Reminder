@@ -27,6 +27,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,6 +43,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rkcoding.taskreminder.core.navigation.Screen
+import com.rkcoding.taskreminder.core.utils.SnackBarEvent
 import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DeleteDialog
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.PriorityButton
@@ -50,6 +53,7 @@ import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.co
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskTopBar
 import com.rkcoding.taskreminder.ui.theme.CustomBlue
 import com.rkcoding.taskreminder.ui.theme.DarkBlue
+import kotlinx.coroutines.flow.collectLatest
 import java.time.Instant
 
 
@@ -62,9 +66,6 @@ fun AddTaskScreen(
 
     val state by viewModel.state.collectAsState()
 
-    val priority = listOf(
-        "Low", "Medium", "High"
-    )
 
 //    var title by remember { mutableStateOf("") }
 //    var description by remember { mutableStateOf("") }
@@ -152,6 +153,26 @@ fun AddTaskScreen(
             timePickerDialog = false
         }
     )
+
+    // show SnackBar Event
+    LaunchedEffect(key1 = true){
+        viewModel.snackBarEvent.collectLatest { event ->
+            when(event){
+                SnackBarEvent.Navigate -> {
+                    navController.navigate(Screen.TaskListScreen.route)
+                }
+                SnackBarEvent.NavigateUp -> Unit
+                is SnackBarEvent.ShowSnackBar -> {
+                    SnackBarEvent.ShowSnackBar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+                }
+            }
+        }
+    }
+
+
 
     Scaffold(
         topBar = {
@@ -280,7 +301,9 @@ fun AddTaskScreen(
             ) {
                 Priority.entries.forEach { priority ->
                     PriorityButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(4.dp),
                         label = priority.title,
                         backgroundColor = priority.color,
                         borderColor = if (priority == state.priority) Color.White else Color.Transparent,
@@ -299,7 +322,9 @@ fun AddTaskScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
-                onClick = { viewModel.onEvent(AddTaskEvent.SaveTask) },
+                onClick = {
+                    viewModel.onEvent(AddTaskEvent.SaveTask)
+                },
                 enabled = isTitleError == null && isDescriptionError == null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CustomBlue,

@@ -1,7 +1,10 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rkcoding.taskreminder.core.utils.SnackBarEvent
+import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -9,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,9 +28,11 @@ class AddTaskViewModel @Inject constructor(
 
     fun onEvent(event: AddTaskEvent){
         when(event){
+
             AddTaskEvent.DeleteTask -> {
 
             }
+
             AddTaskEvent.IsTaskCompleted -> {
                 _state.update {
                     it.copy(
@@ -34,6 +40,7 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddTaskEvent.OnDescriptionChange -> {
                 _state.update {
                     it.copy(
@@ -41,6 +48,7 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddTaskEvent.OnDueDateChange -> {
                 _state.update {
                     it.copy(
@@ -48,6 +56,7 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddTaskEvent.OnDueTimeChange -> {
                 _state.update {
                     it.copy(
@@ -55,6 +64,7 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddTaskEvent.OnPriorityChange -> {
                 _state.update {
                     it.copy(
@@ -62,6 +72,7 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddTaskEvent.OnTitleChange -> {
                 _state.update {
                     it.copy(
@@ -69,9 +80,42 @@ class AddTaskViewModel @Inject constructor(
                     )
                 }
             }
-            AddTaskEvent.SaveTask -> {
 
+            AddTaskEvent.SaveTask -> {
+                saveTask()
             }
+        }
+    }
+
+    private fun saveTask(){
+        viewModelScope.launch {
+            try {
+                repository.addTask(
+                    Task(
+                        taskId = _state.value.currentTaskId ?: 0,
+                        title = _state.value.title,
+                        description = _state.value.description,
+                        dueDate = _state.value.dueDate ?: 0L,
+                        dueTime = _state.value.dueTime ?: "",
+                        priority = _state.value.priority.value,
+                        isCompleted = _state.value.isTaskCompleted
+                    )
+                )
+                _snackBarEvent.send(
+                    SnackBarEvent.ShowSnackBar(
+                        message = "Task saved Successfully",
+                        duration = SnackbarDuration.Short
+                    )
+                )
+            }catch (e: Exception){
+                _snackBarEvent.send(
+                    SnackBarEvent.ShowSnackBar(
+                        message = "Task Can't be save",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+
         }
     }
 
