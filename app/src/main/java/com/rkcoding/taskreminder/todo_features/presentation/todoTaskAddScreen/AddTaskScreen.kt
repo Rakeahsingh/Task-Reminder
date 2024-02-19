@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,9 +20,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rkcoding.taskreminder.core.navigation.Screen
-import com.rkcoding.taskreminder.core.utils.SnackBarEvent
+import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DeleteDialog
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.PriorityButton
@@ -107,6 +105,9 @@ fun AddTaskScreen(
     // show date picker dialog remember
     var datePickerDialog by remember { mutableStateOf(false) }
 
+    // snack bar State
+    val snackBarState = remember { SnackbarHostState() }
+
     // Task Date picker state
     val datePickerState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         rememberDatePickerState(
@@ -158,12 +159,12 @@ fun AddTaskScreen(
     LaunchedEffect(key1 = true){
         viewModel.snackBarEvent.collectLatest { event ->
             when(event){
-                SnackBarEvent.Navigate -> {
+                is UiEvent.NavigateTo -> {
                     navController.navigate(Screen.TaskListScreen.route)
                 }
-                SnackBarEvent.NavigateUp -> Unit
-                is SnackBarEvent.ShowSnackBar -> {
-                    SnackBarEvent.ShowSnackBar(
+                UiEvent.NavigateUp -> Unit
+                is UiEvent.ShowSnackBar -> {
+                    snackBarState.showSnackbar(
                         message = event.message,
                         duration = event.duration
                     )

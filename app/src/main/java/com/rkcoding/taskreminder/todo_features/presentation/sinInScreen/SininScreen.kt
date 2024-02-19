@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.android.gms.auth.api.identity.Identity
 import com.rkcoding.taskreminder.core.navigation.Screen
-import com.rkcoding.taskreminder.core.utils.SnackBarEvent
+import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -65,16 +65,16 @@ fun SinInScreen(
     LaunchedEffect(key1 = state.isSinInSuccess){
         viewModel.snackBarEvent.collectLatest { event ->
             when(event){
-                SnackBarEvent.NavigateUp -> Unit
+                UiEvent.NavigateUp -> Unit
 
-                is SnackBarEvent.ShowSnackBar -> {
-                    SnackBarEvent.ShowSnackBar(
+                is UiEvent.ShowSnackBar -> {
+                    UiEvent.ShowSnackBar(
                         message = event.message,
                         duration = event.duration
                     )
                 }
 
-                SnackBarEvent.Navigate -> {
+                UiEvent.Navigate -> {
                     navController.navigate(Screen.TaskListScreen.route)
                 }
 

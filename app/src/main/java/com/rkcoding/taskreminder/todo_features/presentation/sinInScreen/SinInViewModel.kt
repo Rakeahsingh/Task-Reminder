@@ -3,9 +3,7 @@ package com.rkcoding.taskreminder.todo_features.presentation.sinInScreen
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rkcoding.taskreminder.core.utils.SnackBarEvent
-import com.rkcoding.taskreminder.todo_features.domain.model.Task
-import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
+import com.rkcoding.taskreminder.core.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +19,7 @@ class SinInViewModel @Inject constructor(): ViewModel(){
     private val _state = MutableStateFlow(SinInState())
     val state = _state.asStateFlow()
 
-    private val _snackBarEvent = Channel<SnackBarEvent>()
+    private val _snackBarEvent = Channel<UiEvent>()
     val snackBarEvent = _snackBarEvent.receiveAsFlow()
 
     fun onEvent(event: SinInEvent){
@@ -36,17 +34,17 @@ class SinInViewModel @Inject constructor(): ViewModel(){
                             )
                         }
                         _snackBarEvent.send(
-                            SnackBarEvent.ShowSnackBar(
+                            UiEvent.ShowSnackBar(
                                 message = "SinIn Successfully",
                                 duration = SnackbarDuration.Short
                             )
                         )
                         _snackBarEvent.send(
-                            SnackBarEvent.Navigate
+                            UiEvent.Navigate
                         )
                     } catch (e: Exception) {
                         _snackBarEvent.send(
-                            SnackBarEvent.ShowSnackBar(
+                            UiEvent.ShowSnackBar(
                                 message = "SinIn Successfully",
                                 duration = SnackbarDuration.Long
                             )

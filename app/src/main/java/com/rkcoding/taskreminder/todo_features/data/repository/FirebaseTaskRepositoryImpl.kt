@@ -1,5 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -45,13 +46,18 @@ class FirebaseTaskRepositoryImpl(
     }
 
     override suspend fun addTask(task: Task) {
-        val userId = firebaseAuth.currentUser?.uid ?: return
-        fireStore.collection("users")
-            .document(userId)
-            .collection("tasks")
-            .document(task.taskId.toString())
-            .set(task, SetOptions.merge())
-            .await()
+        if (task.taskId.toString().isNotEmpty()){
+            val userId = firebaseAuth.currentUser?.uid ?: return
+            fireStore.collection("users")
+                .document(userId)
+                .collection("tasks")
+                .document(task.taskId.toString())
+                .set(task, SetOptions.merge())
+                .await()
+        }else{
+            Log.d("TAG", "Task id is null: ${task.taskId}")
+        }
+        
     }
 
     override suspend fun deleteTask(taskId: Int) {

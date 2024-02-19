@@ -3,7 +3,8 @@ package com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rkcoding.taskreminder.core.utils.SnackBarEvent
+import com.rkcoding.taskreminder.core.navigation.Screen
+import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,14 +24,14 @@ class AddTaskViewModel @Inject constructor(
     private val _state = MutableStateFlow(AddTaskState())
     val state = _state.asStateFlow()
 
-    private val _snackBarEvent = Channel<SnackBarEvent>()
+    private val _snackBarEvent = Channel<UiEvent>()
     val snackBarEvent = _snackBarEvent.receiveAsFlow()
 
     fun onEvent(event: AddTaskEvent){
         when(event){
 
             AddTaskEvent.DeleteTask -> {
-
+                deleteTask()
             }
 
             AddTaskEvent.IsTaskCompleted -> {
@@ -102,15 +103,43 @@ class AddTaskViewModel @Inject constructor(
                     )
                 )
                 _snackBarEvent.send(
-                    SnackBarEvent.ShowSnackBar(
+                    UiEvent.ShowSnackBar(
                         message = "Task saved Successfully",
+                        duration = SnackbarDuration.Short
+                    )
+                )
+                _snackBarEvent.send(
+                    UiEvent.NavigateTo
+                )
+            }catch (e: Exception){
+                _snackBarEvent.send(
+                    UiEvent.ShowSnackBar(
+                        message = "Task Can't be save",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+
+        }
+    }
+
+
+    private fun deleteTask(){
+        viewModelScope.launch {
+            try {
+                repository.deleteTask(
+                    taskId = _state.value.currentTaskId ?: return@launch
+                )
+                _snackBarEvent.send(
+                    UiEvent.ShowSnackBar(
+                        message = "Task Deleted Successfully",
                         duration = SnackbarDuration.Short
                     )
                 )
             }catch (e: Exception){
                 _snackBarEvent.send(
-                    SnackBarEvent.ShowSnackBar(
-                        message = "Task Can't be save",
+                    UiEvent.ShowSnackBar(
+                        message = "Task Can't be Deleted",
                         duration = SnackbarDuration.Long
                     )
                 )
