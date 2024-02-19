@@ -34,7 +34,7 @@ class FirebaseTaskRepositoryImpl(
             .documents
             .mapNotNull { document ->
                 Task(
-                    taskId = document.getString("id")?.toInt() ?: return@mapNotNull null,
+                    taskId = document.getString("id") ?: return@mapNotNull null,
                     title = document.getString("title") ?: "",
                     description = document.getString("description") ?: "",
                     dueDate = document.getLong("dueDate") ?: 0L,
@@ -46,12 +46,13 @@ class FirebaseTaskRepositoryImpl(
     }
 
     override suspend fun addTask(task: Task) {
-        if (task.taskId.toString().isNotEmpty()){
+        if (task.taskId.isNotEmpty()){
+            Log.d("TAG", "TaskId: ${task.taskId}")
             val userId = firebaseAuth.currentUser?.uid ?: return
             fireStore.collection("users")
                 .document(userId)
                 .collection("tasks")
-                .document(task.taskId.toString())
+                .document(task.taskId)
                 .set(task, SetOptions.merge())
                 .await()
         }else{
@@ -60,7 +61,7 @@ class FirebaseTaskRepositoryImpl(
         
     }
 
-    override suspend fun deleteTask(taskId: Int) {
+    override suspend fun deleteTask(taskId: String) {
         val userId = firebaseAuth.currentUser?.uid ?: return
         val query = fireStore.collection("users")
             .document(userId)
@@ -89,7 +90,7 @@ class FirebaseTaskRepositoryImpl(
 
             if (documents.isNotEmpty()){
                 val document = documents[0]
-                val taskId = document.getString("id")?.toInt() ?: return null
+                val taskId = document.getString("id") ?: return null
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L
@@ -125,7 +126,7 @@ class FirebaseTaskRepositoryImpl(
             }
             val tasks = mutableListOf<Task>()
             querySnapshot?.documents?.forEach { document ->
-                val taskId = document.getString("id")?.toInt() ?: return@forEach
+                val taskId = document.getString("id") ?: return@forEach
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L

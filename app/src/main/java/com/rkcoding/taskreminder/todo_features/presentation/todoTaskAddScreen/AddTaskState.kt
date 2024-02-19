@@ -5,9 +5,10 @@ import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.ui.theme.CustomGreen
 import com.rkcoding.taskreminder.ui.theme.CustomRed
 import com.rkcoding.taskreminder.ui.theme.Orange
+import java.util.Date
 
 data class AddTaskState(
-    val currentTaskId: Int? = null,
+    val currentTaskId: String = Date().time.toString(),
     val title: String = "",
     val description: String = "",
     val dueDate: Long? = null,

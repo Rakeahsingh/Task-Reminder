@@ -93,7 +93,7 @@ class AddTaskViewModel @Inject constructor(
             try {
                 repository.addTask(
                     Task(
-                        taskId = _state.value.currentTaskId ?: 0,
+                        taskId = _state.value.currentTaskId,
                         title = _state.value.title,
                         description = _state.value.description,
                         dueDate = _state.value.dueDate ?: 0L,
@@ -128,7 +128,7 @@ class AddTaskViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.deleteTask(
-                    taskId = _state.value.currentTaskId ?: return@launch
+                    taskId = _state.value.currentTaskId
                 )
                 _snackBarEvent.send(
                     UiEvent.ShowSnackBar(
