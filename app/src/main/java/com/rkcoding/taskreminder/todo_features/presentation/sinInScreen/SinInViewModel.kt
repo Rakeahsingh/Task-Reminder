@@ -40,7 +40,7 @@ class SinInViewModel @Inject constructor(): ViewModel(){
                             )
                         )
                         _snackBarEvent.send(
-                            UiEvent.Navigate
+                            UiEvent.NavigateTo
                         )
                     } catch (e: Exception) {
                         _snackBarEvent.send(

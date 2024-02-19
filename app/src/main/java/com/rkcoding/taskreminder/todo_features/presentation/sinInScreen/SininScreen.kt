@@ -74,7 +74,7 @@ fun SinInScreen(
                     )
                 }
 
-                UiEvent.Navigate -> {
+                UiEvent.NavigateTo -> {
                     navController.navigate(Screen.TaskListScreen.route)
                 }
 
