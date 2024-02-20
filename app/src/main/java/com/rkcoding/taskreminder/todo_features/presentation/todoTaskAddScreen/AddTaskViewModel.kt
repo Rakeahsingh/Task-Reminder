@@ -1,6 +1,7 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen
 
 import androidx.compose.material3.SnackbarDuration
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rkcoding.taskreminder.core.navigation.Screen
@@ -18,14 +19,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
-    private val repository: FirebaseTaskRepository
+    private val repository: FirebaseTaskRepository,
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
+
+    val taskId = savedStateHandle.get<Int>("taskId") ?: 0
 
     private val _state = MutableStateFlow(AddTaskState())
     val state = _state.asStateFlow()
 
     private val _snackBarEvent = Channel<UiEvent>()
     val snackBarEvent = _snackBarEvent.receiveAsFlow()
+
+    init {
+        fetchTask()
+    }
 
     fun onEvent(event: AddTaskEvent){
         when(event){
@@ -103,13 +111,13 @@ class AddTaskViewModel @Inject constructor(
                     )
                 )
                 _snackBarEvent.send(
+                    UiEvent.NavigateTo
+                )
+                _snackBarEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task saved Successfully",
                         duration = SnackbarDuration.Short
                     )
-                )
-                _snackBarEvent.send(
-                    UiEvent.NavigateTo
                 )
             }catch (e: Exception){
                 _snackBarEvent.send(
@@ -145,6 +153,25 @@ class AddTaskViewModel @Inject constructor(
                 )
             }
 
+        }
+    }
+
+
+    private fun fetchTask(){
+        viewModelScope.launch {
+            repository.getTaskById(id = taskId)?.let { task ->
+                _state.update {
+                    it.copy(
+                        title = task.title,
+                        description = task.description,
+                        dueDate = task.dueDate,
+                        dueTime = task.dueTime,
+                        priority = Priority.fromInt(task.priority),
+                        isTaskCompleted = task.isCompleted,
+                        currentTaskId = task.taskId
+                    )
+                }
+            }
         }
     }
 

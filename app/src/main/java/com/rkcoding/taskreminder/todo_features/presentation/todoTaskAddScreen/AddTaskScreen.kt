@@ -179,7 +179,7 @@ fun AddTaskScreen(
         topBar = {
             TaskTopBar(
                 isTaskExits = true,
-                isComplete = true,
+                isComplete = state.isTaskCompleted,
                 checkBoxBorderColor = Color.Red,
                 onBackIconClick = { navController.popBackStack() },
                 onCheckBoxClick = {
@@ -270,7 +270,7 @@ fun AddTaskScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = state.dueTime ?: "select reminder Time" ,
+                    text = state.dueTime ?: "00:00" ,
                     style = MaterialTheme.typography.bodyLarge,
                     fontStyle = FontStyle.Italic
                 )
