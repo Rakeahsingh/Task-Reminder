@@ -61,18 +61,11 @@ fun TaskListScreen(
     val scope = rememberCoroutineScope()
 
     // snackBar state
-    val snackBarState = remember {
-        SnackbarHostState()
-    }
+    val snackBarState = remember { SnackbarHostState() }
 
       // floating action button functionality
     val listState = rememberLazyListState()
     val isFabExtended by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
-
-    // show sinOut Dialog
-    val sinOutDialog by remember { mutableStateOf(false) }
-
-    // show SinOut Dialog
 
 
 
@@ -165,7 +158,9 @@ fun TaskListScreen(
                         },
                         onCheckBoxClick = {
                             viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
-                        }
+                        },
+                        switchState = state.switchState,
+                        onSwitchValueChange = {  }
                     )
                 }
             }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +29,7 @@ class TaskListViewModel @Inject constructor(
 
     private var recentDeletedTask : Task? = null
 
-    private var getTaskJob: Job? = null
+    private var taskJob: Job? = null
 
 
 

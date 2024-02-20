@@ -8,8 +8,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -44,6 +48,7 @@ import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
+import com.rkcoding.taskreminder.ui.theme.DarkBlue
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -56,14 +61,10 @@ fun SinInScreen(
 
     val state by viewModel.state.collectAsState()
 
-    // text visible
-    val isTextVisible by remember { mutableStateOf(false) }
+    // text hover
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
 
-    // target value
-    val textTargetValue by animateFloatAsState(
-        targetValue = if (isTextVisible) 1f else 0f,
-        label = "animate"
-    )
 
     val context = LocalContext.current
 
@@ -123,32 +124,23 @@ fun SinInScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        Button(
-            onClick = {
-                scope.launch {
-                    val sinInIntentSender = googleAuthUiClient.sinIn()
-                    launcher.launch(
-                        IntentSenderRequest.Builder(
-                            sinInIntentSender ?: return@launch
-                        ).build()
-                    )
-                }
-            }
-        ) {
-            Text(text = "SinIn")
-        }
+
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp)
+                .background(if (isHovered) DarkBlue else Color.Transparent)
+                .hoverable(interactionSource)
                 .clickable {
                     scope.launch {
                         val sinInIntentSender = googleAuthUiClient.sinIn()
                         launcher.launch(
-                            IntentSenderRequest.Builder(
-                                sinInIntentSender ?: return@launch
-                            ).build()
+                            IntentSenderRequest
+                                .Builder(
+                                    sinInIntentSender ?: return@launch
+                                )
+                                .build()
                         )
                     }
                 },
@@ -163,22 +155,15 @@ fun SinInScreen(
                     modifier = Modifier.size(80.dp)
                 )
 
-                AnimatedContent(
-                    targetState = textTargetValue,
-                    label = "Animated content"
-                ) {
-                    Text(
-                        text = "SinIn with Google",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-                }
+                Text(
+                    text = if (isHovered)"SinIn with Google" else "",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
             }
         }
 
     }
-
-
 
 
 }
