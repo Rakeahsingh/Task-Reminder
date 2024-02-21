@@ -1,8 +1,12 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,24 +22,35 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.GroupOff
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -50,10 +65,12 @@ import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
+import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DialogBox
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components.TaskCardItem
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
     userData: UserData?,
@@ -67,12 +84,31 @@ fun TaskListScreen(
     // coroutine scope
     val scope = rememberCoroutineScope()
 
+    // show sinOut dialog state
+    var showSinOutDialog by remember { mutableStateOf(false) }
+
     // snackBar state
     val snackBarState = remember { SnackbarHostState() }
 
       // floating action button functionality
     val listState = rememberLazyListState()
     val isFabExtended by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
+
+    // Show SinOut Dialog
+    DialogBox(
+        text = "Google SinOut",
+        bodyText = "Are you sure you want to SinOut your Account",
+        iconImage = Icons.Default.GroupOff,
+        isDialogShow = showSinOutDialog,
+        onConfirmButtonClick = {
+            showSinOutDialog = false
+            onSinOut()
+        },
+        onDismissRequest = { showSinOutDialog = false }
+        )
+
+    // swipe to dismiss
+    val dismissState = rememberDismissState()
 
 
 
@@ -92,6 +128,7 @@ fun TaskListScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarState) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { navController.navigate(Screen.AddTaskScreen.route) },
@@ -131,7 +168,7 @@ fun TaskListScreen(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
-                            .clickable { onSinOut() }
+                            .clickable { showSinOutDialog = true }
                     )
                 }
             }
@@ -166,32 +203,70 @@ fun TaskListScreen(
                     }
                 }
                 items(state.tasks){ task ->
-                    TaskCardItem(
-                        task = task,
-                        onTaskCardClick = {
-                              navController.navigate(
-                                  route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
-                              )
-                        },
-                        onDeleteTaskClick = {
-                             viewModel.onEvent(TaskListEvent.DeleteTask(task))
-                            scope.launch {
-                                val result = snackBarState.showSnackbar(
-                                    message = "Task Deleted",
-                                    actionLabel = "Undo",
-                                    duration = SnackbarDuration.Short
+
+                    SwipeToDismiss(
+                        state = dismissState,
+                        directions = setOf(DismissDirection.EndToStart),
+                        background = {
+                            // background color
+                           val backgroundColor by animateColorAsState(
+                               when(dismissState.targetValue){
+                                   DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.8f)
+                                   else -> Color.White
+                               },
+                               label = "background color animation"
+                           )
+                            // icon size
+                            val iconScale by animateFloatAsState(
+                                targetValue = if (dismissState.targetValue == DismissValue.DismissedToStart) 1.3f else 0.5f,
+                                label = "icon animation"
+                            )
+
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(color = backgroundColor)
+                                    .padding(end = 16.dp), // inner padding
+                                contentAlignment = Alignment.CenterEnd // place the icon at the end (left)
+                            ) {
+                                Icon(
+                                    modifier = Modifier.scale(iconScale),
+                                    imageVector = Icons.Outlined.Delete,
+                                    contentDescription = "Delete",
+                                    tint = Color.White
                                 )
-                                if (result == SnackbarResult.ActionPerformed){
-                                    viewModel.onEvent(TaskListEvent.RestoreTask)
-                                }
                             }
                         },
-                        onCheckBoxClick = {
-                            viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
-                        },
-                        switchState = state.switchState,
-                        onSwitchValueChange = {  }
+                        dismissContent = {
+                            TaskCardItem(
+                                task = task,
+                                onTaskCardClick = {
+                                    navController.navigate(
+                                        route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
+                                    )
+                                },
+                                onDeleteTaskClick = {
+                                    viewModel.onEvent(TaskListEvent.DeleteTask(task))
+                                    scope.launch {
+                                        val result = snackBarState.showSnackbar(
+                                            message = "Task Deleted",
+                                            actionLabel = "Undo",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed){
+                                            viewModel.onEvent(TaskListEvent.RestoreTask)
+                                        }
+                                    }
+                                },
+                                onCheckBoxClick = {
+                                    viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
+                                },
+                                switchState = state.switchState,
+                                onSwitchValueChange = {  }
+                            )
+                        }
                     )
+
                 }
             }
 

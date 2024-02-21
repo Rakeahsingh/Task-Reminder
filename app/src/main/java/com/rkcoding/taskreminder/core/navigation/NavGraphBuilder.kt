@@ -26,9 +26,9 @@ fun NavGraphBuilder(
     val hasUser = firebaseAuth.currentUser?.uid
 
     val context = LocalContext.current
-//
+
     val scope = rememberCoroutineScope()
-//
+
     val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = context,

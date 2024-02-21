@@ -7,11 +7,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
-fun DeleteDialog(
+fun DialogBox(
     text: String,
     bodyText: String,
+    iconImage: ImageVector,
     isDialogShow: Boolean,
     onConfirmButtonClick: () -> Unit,
     onDismissRequest: () -> Unit
@@ -38,7 +40,7 @@ fun DeleteDialog(
             },
             icon = {
                 Icon(
-                    imageVector = Icons.Default.Info,
+                    imageVector = iconImage,
                     contentDescription = "dialog icon"
                 )
             }

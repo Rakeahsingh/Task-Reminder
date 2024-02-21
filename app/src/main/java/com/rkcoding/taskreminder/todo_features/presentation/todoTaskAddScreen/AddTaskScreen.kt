@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -44,7 +46,7 @@ import androidx.navigation.NavController
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.core.utils.toDateFormat
-import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DeleteDialog
+import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DialogBox
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.PriorityButton
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskDatePicker
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskTimePicker
@@ -64,9 +66,7 @@ fun AddTaskScreen(
 
     val state by viewModel.state.collectAsState()
 
-
-//    var title by remember { mutableStateOf("") }
-//    var description by remember { mutableStateOf("") }
+    // text error state
     var isTitleError by rememberSaveable { mutableStateOf<String?>(null) }
     var isDescriptionError by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -118,7 +118,7 @@ fun AddTaskScreen(
     }
 
     // show Delete Dialog
-    DeleteDialog(
+     DialogBox(
         text = "Delete Task",
         bodyText = "Are you sure you want to Delete this Task",
         isDialogShow = deleteDialog,
@@ -126,7 +126,8 @@ fun AddTaskScreen(
             deleteDialog = false
             viewModel.onEvent(AddTaskEvent.DeleteTask)
         },
-        onDismissRequest = { deleteDialog = false }
+        onDismissRequest = { deleteDialog = false },
+         iconImage = Icons.Default.Delete
     )
 
 
@@ -176,9 +177,10 @@ fun AddTaskScreen(
 
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarState)},
         topBar = {
             TaskTopBar(
-                isTaskExits = true,
+                isTaskExits = state.currentTaskId != null,
                 isComplete = state.isTaskCompleted,
                 checkBoxBorderColor = Color.Red,
                 onBackIconClick = { navController.popBackStack() },

@@ -25,6 +25,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,6 +55,7 @@ import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
+import com.rkcoding.taskreminder.ui.theme.CustomBlue
 import com.rkcoding.taskreminder.ui.theme.DarkBlue
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -94,7 +98,7 @@ fun SinInScreen(
     )
 
 
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = state.isSinInSuccess){
         viewModel.snackBarEvent.collectLatest { event ->
             when(event){
                 UiEvent.NavigateUp -> Unit
@@ -115,44 +119,52 @@ fun SinInScreen(
 
     }
 
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarState) },
+        containerColor = CustomBlue
+    ) { paddingValues ->
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-    ) {
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(
+        Column(
             modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .clickable {
-                    scope.launch {
-                        val sinInIntentSender = googleAuthUiClient.sinIn()
-                        launcher.launch(
-                            IntentSenderRequest
-                                .Builder(
-                                    sinInIntentSender ?: return@launch
-                                )
-                                .build()
-                        )
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ){
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+        ) {
 
-            Image(
-                painter = painterResource(id = R.drawable.google),
-                contentDescription = "google image",
-                modifier = Modifier.size(60.dp)
-            )
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        scope.launch {
+                            val sinInIntentSender = googleAuthUiClient.sinIn()
+                            launcher.launch(
+                                IntentSenderRequest
+                                    .Builder(
+                                        sinInIntentSender ?: return@launch
+                                    )
+                                    .build()
+                            )
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.google),
+                    contentDescription = "google image",
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+
+            if (!state.isSinInSuccess){
+                CircularProgressIndicator()
+            }
+
         }
-
     }
 
 
