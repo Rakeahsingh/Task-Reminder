@@ -1,7 +1,10 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,12 +36,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
@@ -123,6 +131,7 @@ fun TaskListScreen(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(CircleShape)
+                            .clickable { onSinOut() }
                     )
                 }
             }
@@ -132,8 +141,30 @@ fun TaskListScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(4.dp)
+                    .padding(4.dp),
+                contentPadding = PaddingValues(12.dp)
             ){
+                if(state.tasks.isEmpty()){
+                    item {
+                        Image(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .align(Alignment.CenterHorizontally),
+                            painter = painterResource(id = R.drawable.task),
+                            contentDescription = "Books"
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "You don't have any Tasks. \n Click the + Icon to Add Tasks",
+                            textAlign = TextAlign.Center,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
                 items(state.tasks){ task ->
                     TaskCardItem(
                         task = task,

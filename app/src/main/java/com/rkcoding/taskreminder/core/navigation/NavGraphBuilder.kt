@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.auth.FirebaseAuth
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInScreen
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.AddTaskScreen
@@ -18,8 +19,11 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun NavGraphBuilder() {
+fun NavGraphBuilder(
+    firebaseAuth: FirebaseAuth
+) {
 
+    val hasUser = firebaseAuth.currentUser?.uid
 
     val context = LocalContext.current
 //
@@ -37,7 +41,8 @@ fun NavGraphBuilder() {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.SinInScreen.route,
+        startDestination = if (hasUser!!.isNotEmpty()) Screen.TaskListScreen.route
+                           else Screen.SinInScreen.route,
     ){
 
         composable(Screen.SinInScreen.route){

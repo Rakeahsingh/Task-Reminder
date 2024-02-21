@@ -17,10 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -30,6 +26,7 @@ import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.Priority
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskCheckBox
+
 
 @Composable
 fun TaskCardItem(

@@ -11,6 +11,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -114,9 +116,10 @@ class TaskListViewModel @Inject constructor(
     }
 
 
+
     private suspend fun getTask(){
         viewModelScope.launch {
-             repository.getTask().let { task ->
+             repository.tasks.collectLatest { task ->
                 _state.update {
                    it.copy(
                        tasks = task

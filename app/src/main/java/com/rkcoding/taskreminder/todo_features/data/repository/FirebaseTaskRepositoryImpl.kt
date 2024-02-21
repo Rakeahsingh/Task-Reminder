@@ -34,12 +34,12 @@ class FirebaseTaskRepositoryImpl(
             .documents
             .mapNotNull { document ->
                 Task(
-                    taskId = document.getString("id") ?: return@mapNotNull null,
+                    taskId = document.getString("taskId") ?: return@mapNotNull null,
                     title = document.getString("title") ?: "",
                     description = document.getString("description") ?: "",
                     dueDate = document.getLong("dueDate") ?: 0L,
                     dueTime = document.getString("dueTime") ?: "",
-                    priority = document.getString("priority")?.toInt() ?: 1,
+                    priority = document.getLong("priority")?.toInt() ?: 1,
                     isCompleted = document.getBoolean("isCompleted") ?: false
                 )
             }.reversed()
@@ -66,7 +66,7 @@ class FirebaseTaskRepositoryImpl(
         val query = fireStore.collection("users")
             .document(userId)
             .collection("tasks")
-            .whereEqualTo("id", taskId)
+            .whereEqualTo("taskId", taskId)
 
         query.get().addOnSuccessListener {
             for (document in it){
@@ -82,7 +82,7 @@ class FirebaseTaskRepositoryImpl(
             val querySnapshot = fireStore.collection("users")
                 .document(userId)
                 .collection("tasks")
-                .whereEqualTo("id", id)
+                .whereEqualTo("taskId", id)
                 .get()
                 .await()
 
@@ -90,12 +90,12 @@ class FirebaseTaskRepositoryImpl(
 
             if (documents.isNotEmpty()){
                 val document = documents[0]
-                val taskId = document.getString("id") ?: return null
+                val taskId = document.getString("taskId") ?: return null
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L
                 val dueTime = document.getString("dueTime") ?: ""
-                val priority = document.getString("priority")?.toInt() ?: 1
+                val priority = document.getLong("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
 
                 return Task(taskId, title, description, dueDate, dueTime, priority, isCompleted)
@@ -126,15 +126,16 @@ class FirebaseTaskRepositoryImpl(
             }
             val tasks = mutableListOf<Task>()
             querySnapshot?.documents?.forEach { document ->
-                val taskId = document.getString("id") ?: return@forEach
+                val taskId = document.getString("taskId") ?: return@forEach
                 val title = document.getString("title") ?: ""
                 val description = document.getString("description") ?: ""
                 val dueDate = document.getLong("dueDate") ?: 0L
                 val dueTime = document.getString("dueTime") ?: ""
-                val priority = document.getString("priority")?.toInt() ?: 1
+                val priority = document.getLong("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
 
                 val task = Task(taskId, title, description, dueDate, dueTime, priority, isCompleted)
+                Log.d("TAG", "realTimeTaskData: $task")
                 tasks.add(task)
             }
             _tasks.value = tasks
