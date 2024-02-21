@@ -23,7 +23,7 @@ class AddTaskViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    val taskId = savedStateHandle.get<Int>("taskId") ?: 0
+    private val taskId = savedStateHandle.get<Int>("taskId") ?: 0
 
     private val _state = MutableStateFlow(AddTaskState())
     val state = _state.asStateFlow()

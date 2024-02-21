@@ -12,12 +12,13 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
-    private val firebaseTaskRepository: FirebaseTaskRepository
+    private val repository: FirebaseTaskRepository
 ): ViewModel() {
 
 
@@ -29,12 +30,12 @@ class TaskListViewModel @Inject constructor(
 
     private var recentDeletedTask : Task? = null
 
-    private var taskJob: Job? = null
-
-
 
     init {
-        getTask()
+        viewModelScope.launch {
+            repository.realTimeTaskData()
+            getTask()
+        }
     }
 
 
@@ -45,21 +46,20 @@ class TaskListViewModel @Inject constructor(
 
             TaskListEvent.RestoreTask -> {
                 viewModelScope.launch {
-                    firebaseTaskRepository.addTask(recentDeletedTask ?: return@launch)
+                    repository.addTask(recentDeletedTask ?: return@launch)
                     recentDeletedTask = null
                 }
             }
 
             is TaskListEvent.OnTaskCompleteChange -> updateTask(event.task)
 
-            }
-
+        }
     }
 
     private fun updateTask(task: Task) {
         viewModelScope.launch {
             try {
-                firebaseTaskRepository.addTask(
+                repository.addTask(
                     task.copy(
                         isCompleted = !task.isCompleted
                     )
@@ -94,7 +94,7 @@ class TaskListViewModel @Inject constructor(
     private fun deleteTask(task: Task){
         viewModelScope.launch {
             try {
-                firebaseTaskRepository.deleteTask(task.taskId)
+                repository.deleteTask(task.taskId)
                 recentDeletedTask = task
                 _uiEvent.send(
                     UiEvent.ShowSnackBar(
@@ -114,9 +114,15 @@ class TaskListViewModel @Inject constructor(
     }
 
 
-    private fun getTask(){
+    private suspend fun getTask(){
         viewModelScope.launch {
-            firebaseTaskRepository.getTask()
+             repository.getTask().let { task ->
+                _state.update {
+                   it.copy(
+                       tasks = task
+                   )
+                }
+            }
         }
     }
 

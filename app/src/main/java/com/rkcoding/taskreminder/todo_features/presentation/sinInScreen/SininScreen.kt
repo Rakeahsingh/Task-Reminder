@@ -17,10 +17,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -33,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
@@ -60,10 +64,6 @@ fun SinInScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
-
-    // text hover
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
 
 
     val context = LocalContext.current
@@ -121,17 +121,16 @@ fun SinInScreen(
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+//        verticalArrangement = Arrangement.Center
     ) {
 
 
+        Spacer(modifier = Modifier.weight(1f))
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-                .background(if (isHovered) DarkBlue else Color.Transparent)
-                .hoverable(interactionSource)
+                .size(60.dp)
+                .clip(CircleShape)
                 .clickable {
                     scope.launch {
                         val sinInIntentSender = googleAuthUiClient.sinIn()
@@ -146,21 +145,12 @@ fun SinInScreen(
                 },
             contentAlignment = Alignment.Center
         ){
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "google image",
-                    modifier = Modifier.size(80.dp)
-                )
 
-                Text(
-                    text = if (isHovered)"SinIn with Google" else "",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = "google image",
+                modifier = Modifier.size(60.dp)
+            )
         }
 
     }
