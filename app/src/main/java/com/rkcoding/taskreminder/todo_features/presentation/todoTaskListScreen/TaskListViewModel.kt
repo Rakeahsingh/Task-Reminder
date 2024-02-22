@@ -98,12 +98,6 @@ class TaskListViewModel @Inject constructor(
             try {
                 repository.deleteTask(task.taskId)
                 recentDeletedTask = task
-                _uiEvent.send(
-                    UiEvent.ShowSnackBar(
-                        message = "Task deleted Successfully",
-                        duration = SnackbarDuration.Long
-                    )
-                )
             }catch (e: Exception){
                 _uiEvent.send(
                     UiEvent.ShowSnackBar(
@@ -118,10 +112,12 @@ class TaskListViewModel @Inject constructor(
 
 
     private suspend fun getTask(){
-        viewModelScope.launch {
-            _state.value = _state.value.copy(
-                isLoading = true
+        _state.update {
+            it.copy(
+                isLoading = false
             )
+        }
+        viewModelScope.launch {
              repository.tasks.collectLatest { task ->
                 _state.update {
                    it.copy(

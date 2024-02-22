@@ -164,7 +164,8 @@ fun FloatingGoogleButton(
 ) {
 
     FloatingActionButton(
-        onClick = { onIconClick() }
+        onClick = { onIconClick() },
+        containerColor = Color.Transparent
     ) {
         Box(
             modifier = Modifier

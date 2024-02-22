@@ -16,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskTopBar(
-    isTaskExits: Boolean,
-    isComplete: Boolean,
-    checkBoxBorderColor: Color,
+//    isTaskExits: Boolean,
+//    isComplete: Boolean,
+//    checkBoxBorderColor: Color,
     onBackIconClick: () -> Unit,
-    onCheckBoxClick: () -> Unit,
-    onDeleteIconClick: () -> Unit
+//    onCheckBoxClick: () -> Unit,
+//    onDeleteIconClick: () -> Unit
 ) {
 
     TopAppBar(
@@ -42,24 +42,24 @@ fun TaskTopBar(
                 fontWeight = FontWeight.Bold
             )
         },
-        actions = {
-            if (isTaskExits){
-                TaskCheckBox(
-                    isComplete = isComplete,
-                    borderColor = checkBoxBorderColor,
-                    onCheckBoxClick = onCheckBoxClick
-                )
-
-                IconButton(
-                    onClick = onDeleteIconClick
-                ) {
-                   Icon(
-                       imageVector = Icons.Default.Delete,
-                       contentDescription = "Delete"
-                   )
-                }
-            }
-        }
+//        actions = {
+//            if (isTaskExits){
+//                TaskCheckBox(
+//                    isComplete = isComplete,
+//                    borderColor = checkBoxBorderColor,
+//                    onCheckBoxClick = onCheckBoxClick
+//                )
+//
+//                IconButton(
+//                    onClick = onDeleteIconClick
+//                ) {
+//                   Icon(
+//                       imageVector = Icons.Default.Delete,
+//                       contentDescription = "Delete"
+//                   )
+//                }
+//            }
+//        }
     )
 
 

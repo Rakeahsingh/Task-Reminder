@@ -69,6 +69,7 @@ import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DialogBox
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components.TaskCardItem
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -107,7 +108,8 @@ fun TaskListScreen(
             showSinOutDialog = false
             onSinOut()
         },
-        onDismissRequest = { showSinOutDialog = false }
+        onDismissRequest = { showSinOutDialog = false },
+        confirmText = "SinOut"
         )
 
 
@@ -180,11 +182,12 @@ fun TaskListScreen(
 
             if(state.tasks.isEmpty()){
                 Column(
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Image(
                         modifier = Modifier
-                            .size(120.dp)
+                            .size(250.dp)
                             .align(Alignment.CenterHorizontally),
                         painter = painterResource(id = R.drawable.task),
                         contentDescription = "Books",
@@ -241,7 +244,7 @@ fun TaskListScreen(
                            val backgroundColor by animateColorAsState(
                                when(dismissState.targetValue){
                                    DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.8f)
-                                   else -> Color.White
+                                   else -> MaterialTheme.colorScheme.background
                                },
                                label = "background color animation"
                            )

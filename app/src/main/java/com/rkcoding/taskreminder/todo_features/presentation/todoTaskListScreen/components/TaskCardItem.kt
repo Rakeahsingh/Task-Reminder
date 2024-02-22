@@ -8,17 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -26,6 +24,8 @@ import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.Priority
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskCheckBox
+
+
 
 
 @Composable
@@ -48,7 +48,7 @@ fun TaskCardItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TaskCheckBox(
@@ -65,6 +65,20 @@ fun TaskCardItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,
+                    textDecoration = if (task.isCompleted){
+                        TextDecoration.LineThrough
+                    } else TextDecoration.None
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = task.description,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Light,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontStyle = FontStyle.Italic,
                     textDecoration = if (task.isCompleted){
                         TextDecoration.LineThrough
                     } else TextDecoration.None

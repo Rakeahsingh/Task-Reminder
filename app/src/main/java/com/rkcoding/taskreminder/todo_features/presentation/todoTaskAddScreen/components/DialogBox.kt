@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun DialogBox(
     text: String,
     bodyText: String,
+    confirmText: String,
     iconImage: ImageVector,
     isDialogShow: Boolean,
     onConfirmButtonClick: () -> Unit,
@@ -24,7 +25,7 @@ fun DialogBox(
             onDismissRequest = { onDismissRequest() },
             confirmButton = {
                 TextButton(onClick = { onConfirmButtonClick() }) {
-                    Text(text = "Delete")
+                    Text(text = confirmText)
                 }
             },
             title = {

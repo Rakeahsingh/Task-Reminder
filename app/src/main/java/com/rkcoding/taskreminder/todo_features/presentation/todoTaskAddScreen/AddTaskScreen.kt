@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +56,7 @@ import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.co
 import com.rkcoding.taskreminder.ui.theme.CustomBlue
 import com.rkcoding.taskreminder.ui.theme.DarkBlue
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 
@@ -65,6 +68,7 @@ fun AddTaskScreen(
 ) {
 
     val state by viewModel.state.collectAsState()
+    val scope = rememberCoroutineScope()
 
     // text error state
     var isTitleError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -127,7 +131,8 @@ fun AddTaskScreen(
             viewModel.onEvent(AddTaskEvent.DeleteTask)
         },
         onDismissRequest = { deleteDialog = false },
-         iconImage = Icons.Default.Delete
+         iconImage = Icons.Default.Delete,
+         confirmText = "Delete"
     )
 
 
@@ -150,17 +155,27 @@ fun AddTaskScreen(
         onDismissRequest = { timePickerDialog = false },
         onConfirmButtonClick = {
             viewModel.onEvent(AddTaskEvent.OnDueTimeChange(
-                millis = "${timePickerState.hour}:${timePickerState.minute}"
+                millis = if (timePickerState.hour < 10 && timePickerState.minute < 10) {
+                    "0${timePickerState.hour}:0${timePickerState.minute}"
+                }
+                else if (timePickerState.hour < 10 && timePickerState.minute > 10) {
+                    "0${timePickerState.hour}:${timePickerState.minute}"
+                }
+                else if(timePickerState.hour > 10 && timePickerState.minute < 10){
+                "${timePickerState.hour}:0${timePickerState.minute}"
+                }else{
+                    "${timePickerState.hour}:${timePickerState.minute}"
+                }
             ))
             timePickerDialog = false
         }
     )
 
     // show SnackBar Event
-    LaunchedEffect(key1 = true){
-        viewModel.snackBarEvent.collectLatest { event ->
+    LaunchedEffect(key1 = Unit){
+        viewModel.uiEvent.collectLatest { event ->
             when(event){
-                is UiEvent.NavigateTo -> {
+                UiEvent.NavigateTo ->{
                     navController.navigate(Screen.TaskListScreen.route)
                 }
                 UiEvent.NavigateUp -> Unit
@@ -177,19 +192,19 @@ fun AddTaskScreen(
 
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackBarState)},
+        snackbarHost = { SnackbarHost(hostState = snackBarState) },
         topBar = {
             TaskTopBar(
-                isTaskExits = state.currentTaskId != null,
-                isComplete = state.isTaskCompleted,
-                checkBoxBorderColor = Color.Red,
+//                isTaskExits = state.currentTaskId != null ,
+//                isComplete = state.isTaskCompleted,
+//                checkBoxBorderColor = Color.Red,
                 onBackIconClick = { navController.popBackStack() },
-                onCheckBoxClick = {
-                    viewModel.onEvent(AddTaskEvent.IsTaskCompleted)
-                },
-                onDeleteIconClick = {
-                    deleteDialog = true
-                }
+//                onCheckBoxClick = {
+//                    viewModel.onEvent(AddTaskEvent.IsTaskCompleted)
+//                },
+//                onDeleteIconClick = {
+//                    deleteDialog = true
+//                }
             )
         }
     ) { paddingValues ->
@@ -327,6 +342,12 @@ fun AddTaskScreen(
                     .padding(horizontal = 20.dp),
                 onClick = {
                     viewModel.onEvent(AddTaskEvent.SaveTask)
+                    scope.launch {
+                        snackBarState.showSnackbar(
+                            message = "save task Successfully",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 },
                 enabled = isTitleError == null && isDescriptionError == null,
                 colors = ButtonDefaults.buttonColors(

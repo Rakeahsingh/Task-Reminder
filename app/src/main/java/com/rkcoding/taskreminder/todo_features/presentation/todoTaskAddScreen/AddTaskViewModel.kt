@@ -28,8 +28,8 @@ class AddTaskViewModel @Inject constructor(
     private val _state = MutableStateFlow(AddTaskState())
     val state = _state.asStateFlow()
 
-    private val _snackBarEvent = Channel<UiEvent>()
-    val snackBarEvent = _snackBarEvent.receiveAsFlow()
+    private val _uiEvent = Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         fetchTask()
@@ -111,17 +111,17 @@ class AddTaskViewModel @Inject constructor(
                     )
                 )
 
-                _snackBarEvent.send(
+                _uiEvent.send(
+                    UiEvent.NavigateTo
+                )
+                _uiEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task saved Successfully",
                         duration = SnackbarDuration.Short
                     )
                 )
-                _snackBarEvent.send(
-                    UiEvent.NavigateTo
-                )
             }catch (e: Exception){
-                _snackBarEvent.send(
+                _uiEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task Can't be save",
                         duration = SnackbarDuration.Long
@@ -139,14 +139,14 @@ class AddTaskViewModel @Inject constructor(
                 repository.deleteTask(
                     taskId = _state.value.currentTaskId
                 )
-                _snackBarEvent.send(
+                _uiEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task Deleted Successfully",
                         duration = SnackbarDuration.Short
                     )
                 )
             }catch (e: Exception){
-                _snackBarEvent.send(
+                _uiEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task Can't be Deleted",
                         duration = SnackbarDuration.Long
