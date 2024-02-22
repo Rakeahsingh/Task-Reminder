@@ -26,6 +26,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -121,7 +124,21 @@ fun SinInScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackBarState) },
-        containerColor = CustomBlue
+        floatingActionButton = {
+            FloatingGoogleButton {
+            scope.launch {
+                val sinInIntentSender = googleAuthUiClient.sinIn()
+                launcher.launch(
+                    IntentSenderRequest
+                        .Builder(
+                            sinInIntentSender ?: return@launch
+                        )
+                        .build()
+                )
+             }
+           }
+        },
+        floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
 
         Column(
@@ -129,43 +146,39 @@ fun SinInScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center
         ) {
 
-            Spacer(modifier = Modifier.weight(1f))
 
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        scope.launch {
-                            val sinInIntentSender = googleAuthUiClient.sinIn()
-                            launcher.launch(
-                                IntentSenderRequest
-                                    .Builder(
-                                        sinInIntentSender ?: return@launch
-                                    )
-                                    .build()
-                            )
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "google image",
-                    modifier = Modifier.size(60.dp)
-                )
-            }
-
-            if (!state.isSinInSuccess){
-                CircularProgressIndicator()
-            }
 
         }
     }
 
+
+}
+
+
+@Composable
+fun FloatingGoogleButton(
+    onIconClick: () -> Unit
+) {
+
+    FloatingActionButton(
+        onClick = { onIconClick() }
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.google),
+                contentDescription = "google image",
+                modifier = Modifier.size(60.dp)
+            )
+        }
+    }
 
 }

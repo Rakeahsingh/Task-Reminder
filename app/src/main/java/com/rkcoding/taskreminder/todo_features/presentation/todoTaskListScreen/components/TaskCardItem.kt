@@ -33,7 +33,7 @@ fun TaskCardItem(
     modifier: Modifier = Modifier,
     task: Task,
     onTaskCardClick: (Task) -> Unit,
-    onDeleteTaskClick: (Task) -> Unit,
+//    onDeleteTaskClick: (Task) -> Unit,
     onCheckBoxClick: (Task) -> Unit,
     switchState: Boolean,
     onSwitchValueChange: () -> Unit
@@ -86,14 +86,14 @@ fun TaskCardItem(
                 onCheckedChange = { onSwitchValueChange() }
             )
 
-            IconButton(
-                onClick = { onDeleteTaskClick(task) }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "delete task"
-                )
-            }
+//            IconButton(
+//                onClick = { onDeleteTaskClick(task) }
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Delete,
+//                    contentDescription = "delete task"
+//                )
+//            }
 
         }
 

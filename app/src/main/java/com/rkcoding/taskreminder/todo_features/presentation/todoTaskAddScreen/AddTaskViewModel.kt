@@ -110,14 +110,15 @@ class AddTaskViewModel @Inject constructor(
                         isCompleted = _state.value.isTaskCompleted
                     )
                 )
-                _snackBarEvent.send(
-                    UiEvent.NavigateTo
-                )
+
                 _snackBarEvent.send(
                     UiEvent.ShowSnackBar(
                         message = "Task saved Successfully",
                         duration = SnackbarDuration.Short
                     )
+                )
+                _snackBarEvent.send(
+                    UiEvent.NavigateTo
                 )
             }catch (e: Exception){
                 _snackBarEvent.send(
@@ -159,7 +160,7 @@ class AddTaskViewModel @Inject constructor(
 
     private fun fetchTask(){
         viewModelScope.launch {
-            repository.getTaskById(id = taskId)?.let { task ->
+            repository.getTaskById(taskId)?.let { task ->
                 _state.update {
                     it.copy(
                         title = task.title,

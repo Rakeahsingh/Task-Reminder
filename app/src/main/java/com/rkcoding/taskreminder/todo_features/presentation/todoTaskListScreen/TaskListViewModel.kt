@@ -119,10 +119,14 @@ class TaskListViewModel @Inject constructor(
 
     private suspend fun getTask(){
         viewModelScope.launch {
+            _state.value = _state.value.copy(
+                isLoading = true
+            )
              repository.tasks.collectLatest { task ->
                 _state.update {
                    it.copy(
-                       tasks = task
+                       tasks = task,
+                       isLoading = false
                    )
                 }
             }

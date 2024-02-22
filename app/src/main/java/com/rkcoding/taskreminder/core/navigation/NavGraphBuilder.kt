@@ -20,10 +20,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavGraphBuilder(
-    firebaseAuth: FirebaseAuth
+//    firebaseAuth: FirebaseAuth
 ) {
 
-    val hasUser = firebaseAuth.currentUser?.uid
+//    val hasUser = firebaseAuth.currentUser?.uid
 
     val context = LocalContext.current
 
@@ -41,8 +41,7 @@ fun NavGraphBuilder(
 
     NavHost(
         navController = navController,
-        startDestination = if (hasUser!!.isNotEmpty()) Screen.TaskListScreen.route
-                           else Screen.SinInScreen.route,
+        startDestination = Screen.SinInScreen.route
     ){
 
         composable(Screen.SinInScreen.route){
@@ -68,15 +67,15 @@ fun NavGraphBuilder(
         }
 
         composable(
-            route = Screen.AddTaskScreen.route + "?taskId={taskID}",
+            route = Screen.AddTaskScreen.route + "?taskId={taskId}",
             arguments = listOf(
-                navArgument("taskID"){
+                navArgument("taskId"){
                     type = NavType.IntType
                     defaultValue = -1
                 }
             )
         ){
-            val taskId = it.arguments?.getInt("taskID") ?: -1
+            val taskId = it.arguments?.getInt("taskId") ?: -1
             AddTaskScreen(navController = navController)
         }
 

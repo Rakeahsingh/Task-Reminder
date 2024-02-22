@@ -1,5 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,6 +72,7 @@ import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.c
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
@@ -110,8 +113,6 @@ fun TaskListScreen(
     // swipe to dismiss
     val dismissState = rememberDismissState()
 
-
-
     LaunchedEffect(key1 = Unit){
         viewModel.uiEvent.collectLatest { event ->
             when(event){
@@ -146,6 +147,10 @@ fun TaskListScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            if (state.isLoading){
+                CircularProgressIndicator()
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -179,7 +184,7 @@ fun TaskListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp),
-                contentPadding = PaddingValues(12.dp)
+                contentPadding = PaddingValues(vertical = 8.dp)
             ){
                 if(state.tasks.isEmpty()){
                     item {
@@ -188,7 +193,8 @@ fun TaskListScreen(
                                 .size(120.dp)
                                 .align(Alignment.CenterHorizontally),
                             painter = painterResource(id = R.drawable.task),
-                            contentDescription = "Books"
+                            contentDescription = "Books",
+                            alignment = Alignment.Center
                         )
 
                         Spacer(modifier = Modifier.height(12.dp))
@@ -204,6 +210,22 @@ fun TaskListScreen(
                 }
                 items(state.tasks){ task ->
 
+                    // check if user Swipe
+                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart)){
+                        viewModel.onEvent(TaskListEvent.DeleteTask(task))
+                        scope.launch {
+                            val result = snackBarState.showSnackbar(
+                                message = "Task Deleted",
+                                actionLabel = "Undo",
+                                duration = SnackbarDuration.Short
+                            )
+                            if (result == SnackbarResult.ActionPerformed){
+                                viewModel.onEvent(TaskListEvent.RestoreTask)
+                            }
+                        }
+                    }
+
+                    // swipe to delete functionality
                     SwipeToDismiss(
                         state = dismissState,
                         directions = setOf(DismissDirection.EndToStart),
@@ -239,30 +261,22 @@ fun TaskListScreen(
                         },
                         dismissContent = {
                             TaskCardItem(
+                                modifier = Modifier.padding(vertical = 8.dp),
                                 task = task,
                                 onTaskCardClick = {
                                     navController.navigate(
                                         route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
                                     )
                                 },
-                                onDeleteTaskClick = {
-                                    viewModel.onEvent(TaskListEvent.DeleteTask(task))
-                                    scope.launch {
-                                        val result = snackBarState.showSnackbar(
-                                            message = "Task Deleted",
-                                            actionLabel = "Undo",
-                                            duration = SnackbarDuration.Short
-                                        )
-                                        if (result == SnackbarResult.ActionPerformed){
-                                            viewModel.onEvent(TaskListEvent.RestoreTask)
-                                        }
-                                    }
-                                },
+//                                onDeleteTaskClick = {
+//                                    viewModel.onEvent(TaskListEvent.DeleteTask(task))
+//
+//                                },
                                 onCheckBoxClick = {
                                     viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
                                 },
                                 switchState = state.switchState,
-                                onSwitchValueChange = {  }
+                                onSwitchValueChange = { state.switchState = !state.switchState }
                             )
                         }
                     )

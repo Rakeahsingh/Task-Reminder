@@ -11,11 +11,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.rkcoding.taskreminder.core.navigation.NavGraphBuilder
 import com.rkcoding.taskreminder.ui.theme.TaskReminderTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var firebaseAuth: FirebaseAuth
+//    @Inject
+//    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    NavGraphBuilder(firebaseAuth = firebaseAuth)
+                    NavGraphBuilder()
 
                 }
             }
