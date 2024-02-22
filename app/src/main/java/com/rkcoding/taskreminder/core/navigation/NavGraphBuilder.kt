@@ -20,10 +20,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavGraphBuilder(
-//    firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth
 ) {
 
-//    val hasUser = firebaseAuth.currentUser?.uid
+    val hasUser = firebaseAuth.currentUser?.uid
 
     val context = LocalContext.current
 
@@ -41,7 +41,7 @@ fun NavGraphBuilder(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.SinInScreen.route
+        startDestination = if (hasUser != null) Screen.TaskListScreen.route else Screen.SinInScreen.route
     ){
 
         composable(Screen.SinInScreen.route){

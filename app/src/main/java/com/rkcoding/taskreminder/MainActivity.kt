@@ -16,8 +16,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-//    @Inject
-//    private lateinit var firebaseAuth: FirebaseAuth
+    @Inject
+    lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    NavGraphBuilder()
+                    NavGraphBuilder(firebaseAuth = firebaseAuth)
 
                 }
             }

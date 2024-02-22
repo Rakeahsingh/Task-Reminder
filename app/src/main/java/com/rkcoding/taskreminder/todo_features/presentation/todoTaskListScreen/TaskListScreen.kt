@@ -110,8 +110,6 @@ fun TaskListScreen(
         onDismissRequest = { showSinOutDialog = false }
         )
 
-    // swipe to dismiss
-    val dismissState = rememberDismissState()
 
     LaunchedEffect(key1 = Unit){
         viewModel.uiEvent.collectLatest { event ->
@@ -180,35 +178,44 @@ fun TaskListScreen(
 
             Spacer(modifier = Modifier.height(18.dp))
 
+            if(state.tasks.isEmpty()){
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .align(Alignment.CenterHorizontally),
+                        painter = painterResource(id = R.drawable.task),
+                        contentDescription = "Books",
+                        alignment = Alignment.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "You don't have any Tasks. \n Click the + Icon to Add Tasks",
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ){
-                if(state.tasks.isEmpty()){
-                    item {
-                        Image(
-                            modifier = Modifier
-                                .size(120.dp)
-                                .align(Alignment.CenterHorizontally),
-                            painter = painterResource(id = R.drawable.task),
-                            contentDescription = "Books",
-                            alignment = Alignment.Center
-                        )
 
-                        Spacer(modifier = Modifier.height(12.dp))
+                items(
+                    items = state.tasks
+                ){ task ->
 
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "You don't have any Tasks. \n Click the + Icon to Add Tasks",
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            color = Color.Gray
-                        )
-                    }
-                }
-                items(state.tasks){ task ->
+                    // swipe to dismiss
+                    val dismissState = rememberDismissState()
 
                     // check if user Swipe
                     if(dismissState.isDismissed(direction = DismissDirection.EndToStart)){
