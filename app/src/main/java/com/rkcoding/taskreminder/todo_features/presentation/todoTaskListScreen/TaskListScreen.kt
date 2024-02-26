@@ -214,7 +214,8 @@ fun TaskListScreen(
             ){
 
                 items(
-                    items = state.tasks
+                    items = state.tasks,
+                    key = { task -> task.taskId}
                 ){ task ->
 
                     // swipe to dismiss

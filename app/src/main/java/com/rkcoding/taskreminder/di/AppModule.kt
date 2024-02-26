@@ -1,11 +1,14 @@
 package com.rkcoding.taskreminder.di
 
+import android.app.Application
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.rkcoding.taskreminder.todo_features.data.repository.AlarmSchedulerImpl
 import com.rkcoding.taskreminder.todo_features.data.repository.FirebaseTaskRepositoryImpl
+import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.Module
 import dagger.Provides
@@ -33,6 +36,12 @@ object AppModule {
          fireStore: FirebaseFirestore
     ): FirebaseTaskRepository{
         return FirebaseTaskRepositoryImpl(firebaseAuth, fireStore)
+    }
+
+    @Provides
+    @Singleton
+    fun providesAlarmScheduler(application: Application): AlarmScheduler{
+        return AlarmSchedulerImpl(application)
     }
 
 }
