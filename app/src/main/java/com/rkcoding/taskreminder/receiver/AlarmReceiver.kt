@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
@@ -17,6 +18,7 @@ class AlarmReceiver: BroadcastReceiver() {
         val message = intent?.getStringExtra("TASK_REMINDER") ?: return
 
         val channelId = "alarm_id"
+        val defaultUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
 
         context?.let { cxt ->
             val notificationManager = cxt.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -24,7 +26,8 @@ class AlarmReceiver: BroadcastReceiver() {
                 .setSmallIcon(R.drawable.notificaton_info)
                 .setContentTitle("Task Reminder")
                 .setContentText("Notification send with message: $message")
-                .setPriority(Priority.fromInt(0).value)
+                .setPriority(NotificationManager.IMPORTANCE_HIGH)
+                .setSound(defaultUri)
             notificationManager.notify(1, builder.build())
         }
     }

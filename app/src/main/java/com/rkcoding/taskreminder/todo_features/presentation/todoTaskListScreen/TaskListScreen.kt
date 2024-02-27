@@ -1,6 +1,8 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -55,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -66,12 +69,17 @@ import coil.compose.AsyncImage
 import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
+import com.rkcoding.taskreminder.todo_features.data.repository.AlarmSchedulerImpl
+import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
+import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DialogBox
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components.TaskCardItem
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +90,10 @@ fun TaskListScreen(
     navController: NavController,
     viewModel: TaskListViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
+    val scheduler = AlarmSchedulerImpl(context)
+    var alarmItem: AlarmItem? = null
 
     val state by viewModel.state.collectAsState()
 
@@ -287,7 +299,20 @@ fun TaskListScreen(
                                     viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
                                 },
                                 switchState = state.switchState,
-                                onSwitchValueChange = { state.switchState = !state.switchState }
+                                onSwitchValueChange = {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        alarmItem = AlarmItem(
+                                            alarmTime = task.dueTime,
+                                            message = ""
+                                        )
+
+                                    }
+                                    if (state.switchState){
+                                        alarmItem?.let(scheduler::schedule)
+                                    }else{
+                                        alarmItem?.let(scheduler::cancel)
+                                    }
+                                }
                             )
                         }
                     )

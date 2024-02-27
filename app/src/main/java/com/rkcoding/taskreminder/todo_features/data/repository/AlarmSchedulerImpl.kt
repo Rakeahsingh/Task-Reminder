@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
@@ -14,11 +15,16 @@ class AlarmSchedulerImpl(
 ): AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
+
     override fun schedule(alarmItem: AlarmItem) {
         val intent = Intent(context, AlarmManager::class.java)
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
-        val alarmTime = alarmItem.alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond()*1000L
+        val alarmTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            alarmItem.alarmTime.toLong()
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             alarmItem.hashCode(),
