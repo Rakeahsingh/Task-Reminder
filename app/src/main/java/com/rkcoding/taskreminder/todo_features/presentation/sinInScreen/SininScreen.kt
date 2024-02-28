@@ -137,12 +137,6 @@ fun SinInScreen(
                         )
                         .build()
                 )
-
-                snackBarState.showSnackbar(
-                    message = "SinIn Successfully",
-                    duration = SnackbarDuration.Short
-                )
-
              }
            }
         },

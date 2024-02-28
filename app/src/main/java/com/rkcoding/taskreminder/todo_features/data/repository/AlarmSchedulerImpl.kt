@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import java.time.ZoneId
@@ -21,7 +22,7 @@ class AlarmSchedulerImpl(
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
         val alarmTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            alarmItem.alarmTime.toLong()
+            alarmItem.alarmTime.toDateFormat().toLong()
         } else {
             TODO("VERSION.SDK_INT < O")
         }

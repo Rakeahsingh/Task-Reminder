@@ -4,7 +4,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rkcoding.taskreminder.core.utils.UiEvent
+import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
+import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -20,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
-    private val repository: FirebaseTaskRepository
+    private val repository: FirebaseTaskRepository,
+    private val alarmScheduler: AlarmScheduler
 ): ViewModel() {
 
 
@@ -55,6 +58,21 @@ class TaskListViewModel @Inject constructor(
 
             is TaskListEvent.OnTaskCompleteChange -> updateTask(event.task)
 
+            is TaskListEvent.OnSwitchValueChange -> {
+                switchChange(event.alarmItem)
+            }
+
+        }
+    }
+
+    private fun switchChange(alarmItem: AlarmItem) {
+        viewModelScope.launch {
+            alarmScheduler.schedule(
+                AlarmItem(
+                    alarmTime = alarmItem.alarmTime,
+                    message = "Alarm Schedule"
+                )
+            )
         }
     }
 

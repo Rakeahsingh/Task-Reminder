@@ -302,13 +302,13 @@ fun TaskListScreen(
                                 onSwitchValueChange = {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                         alarmItem = AlarmItem(
-                                            alarmTime = task.dueTime,
+                                            alarmTime = task.dueTime.toLong(),
                                             message = ""
                                         )
 
                                     }
                                     if (state.switchState){
-                                        alarmItem?.let(scheduler::schedule)
+                                        viewModel.onEvent(TaskListEvent.OnSwitchValueChange(alarmItem!!))
                                     }else{
                                         alarmItem?.let(scheduler::cancel)
                                     }
