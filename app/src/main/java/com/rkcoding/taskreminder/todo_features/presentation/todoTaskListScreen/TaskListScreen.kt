@@ -81,7 +81,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
@@ -91,9 +91,9 @@ fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
-    val scheduler = AlarmSchedulerImpl(context)
-    var alarmItem: AlarmItem? = null
+//    val context = LocalContext.current
+//    val scheduler = AlarmSchedulerImpl(context)
+//    var alarmItem: AlarmItem? = null
 
     val state by viewModel.state.collectAsState()
 
@@ -123,6 +123,9 @@ fun TaskListScreen(
         onDismissRequest = { showSinOutDialog = false },
         confirmText = "SinOut"
         )
+
+    // Switch state
+    var switchState by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(key1 = Unit){
@@ -298,20 +301,21 @@ fun TaskListScreen(
                                 onCheckBoxClick = {
                                     viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
                                 },
-                                switchState = state.switchState,
+                                switchState = switchState,
                                 onSwitchValueChange = {
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        alarmItem = AlarmItem(
-                                            alarmTime = task.dueTime.toLong(),
-                                            message = ""
-                                        )
-
-                                    }
-                                    if (state.switchState){
-                                        viewModel.onEvent(TaskListEvent.OnSwitchValueChange(alarmItem!!))
-                                    }else{
-                                        alarmItem?.let(scheduler::cancel)
-                                    }
+//                                    if (!switchState){
+//                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                                        alarmItem = AlarmItem(
+//                                            alarmTime = task.dueTime,
+//                                            message = ""
+//                                        )
+//                                            alarmItem?.let { scheduler::schedule }
+//                                    }
+//                                    else{
+//                                        alarmItem?.let(scheduler::cancel)
+//                                    }
+//                                    }
+//
                                 }
                             )
                         }

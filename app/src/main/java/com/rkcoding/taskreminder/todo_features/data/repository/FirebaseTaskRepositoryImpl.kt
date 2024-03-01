@@ -135,7 +135,7 @@ class FirebaseTaskRepositoryImpl(
                 val isCompleted = document.getBoolean("completed") ?: false
 
                 val task = Task(taskId, title, description, dueDate, dueTime, priority, isCompleted)
-                Log.d("TAG", "realTimeTaskData: $task")
+                Log.d("TAG", "realTimeTaskData: ${task.taskId}")
                 tasks.add(task)
             }
             _tasks.value = tasks

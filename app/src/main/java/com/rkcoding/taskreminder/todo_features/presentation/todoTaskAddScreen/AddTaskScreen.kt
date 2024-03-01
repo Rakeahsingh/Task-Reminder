@@ -68,6 +68,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskScreen(
+    taskId: Int?,
     navController: NavController,
     viewModel: AddTaskViewModel = hiltViewModel()
 ) {

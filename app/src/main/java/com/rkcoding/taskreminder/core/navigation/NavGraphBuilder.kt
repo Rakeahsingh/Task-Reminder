@@ -1,5 +1,6 @@
 package com.rkcoding.taskreminder.core.navigation
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -9,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
 import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInScreen
@@ -68,6 +70,10 @@ fun NavGraphBuilder(
 
         composable(
             route = Screen.AddTaskScreen.route + "?taskId={taskId}",
+            deepLinks = listOf(navDeepLink {
+                uriPattern = "task_reminder://dashboard/taskList"
+                action = Intent.ACTION_VIEW
+            }),
             arguments = listOf(
                 navArgument("taskId"){
                     type = NavType.IntType
@@ -76,7 +82,10 @@ fun NavGraphBuilder(
             )
         ){
             val taskId = it.arguments?.getInt("taskId") ?: -1
-            AddTaskScreen(navController = navController)
+            AddTaskScreen(
+                navController = navController,
+                taskId = taskId
+            )
         }
 
     }

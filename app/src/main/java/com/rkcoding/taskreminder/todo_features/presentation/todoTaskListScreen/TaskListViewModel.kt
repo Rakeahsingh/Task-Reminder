@@ -58,23 +58,23 @@ class TaskListViewModel @Inject constructor(
 
             is TaskListEvent.OnTaskCompleteChange -> updateTask(event.task)
 
-            is TaskListEvent.OnSwitchValueChange -> {
-                switchChange(event.alarmItem)
-            }
+//            is TaskListEvent.OnSwitchValueChange -> {
+//                switchChange(event.alarmItem)
+//            }
 
         }
     }
 
-    private fun switchChange(alarmItem: AlarmItem) {
-        viewModelScope.launch {
-            alarmScheduler.schedule(
-                AlarmItem(
-                    alarmTime = alarmItem.alarmTime,
-                    message = "Alarm Schedule"
-                )
-            )
-        }
-    }
+//    private fun switchChange(alarmItem: AlarmItem) {
+//        viewModelScope.launch {
+//            alarmScheduler.schedule(
+//                AlarmItem(
+//                    alarmTime = alarmItem.alarmTime,
+//                    message = "Alarm Schedule"
+//                )
+//            )
+//        }
+//    }
 
     private fun updateTask(task: Task) {
         viewModelScope.launch {

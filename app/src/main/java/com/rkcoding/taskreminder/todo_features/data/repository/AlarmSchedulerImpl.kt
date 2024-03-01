@@ -22,7 +22,7 @@ class AlarmSchedulerImpl(
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
         val alarmTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            alarmItem.alarmTime.toDateFormat().toLong()
+            alarmItem.alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond()
         } else {
             TODO("VERSION.SDK_INT < O")
         }
