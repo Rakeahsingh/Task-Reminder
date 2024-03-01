@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.rkcoding.taskreminder.core.utils.toDateFormat
+import com.rkcoding.taskreminder.receiver.AlarmReceiver
 import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import java.time.ZoneId
@@ -18,7 +18,7 @@ class AlarmSchedulerImpl(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override fun schedule(alarmItem: AlarmItem) {
-        val intent = Intent(context, AlarmManager::class.java)
+        val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
         val alarmTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
