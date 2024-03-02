@@ -9,6 +9,6 @@ sealed class TaskListEvent {
     data class OnTaskCompleteChange(val task: Task): TaskListEvent()
     data object RestoreTask: TaskListEvent()
 
-//    data class OnSwitchValueChange(val alarmItem: AlarmItem): TaskListEvent()
+    data class OnSwitchValueChange(val task: Task): TaskListEvent()
 
 }

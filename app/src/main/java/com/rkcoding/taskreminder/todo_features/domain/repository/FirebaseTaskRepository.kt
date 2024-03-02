@@ -10,7 +10,7 @@ interface FirebaseTaskRepository {
     suspend fun getTask(): List<Task>
     suspend fun addTask(task: Task)
     suspend fun deleteTask(taskId: String)
-    suspend fun getTaskById(id: Int): Task?
+    suspend fun getTaskById(id: String): Task?
 
     suspend fun realTimeTaskData()
 

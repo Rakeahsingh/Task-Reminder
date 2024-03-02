@@ -23,7 +23,7 @@ class AddTaskViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    private val taskId = savedStateHandle.get<Int>("taskId") ?: 0
+    private val taskId = savedStateHandle.get<String>("taskId") ?: ""
 
     private val _state = MutableStateFlow(AddTaskState())
     val state = _state.asStateFlow()
@@ -107,7 +107,8 @@ class AddTaskViewModel @Inject constructor(
                         dueDate = _state.value.dueDate ?: 0L,
                         dueTime = _state.value.dueTime ?: "",
                         priority = _state.value.priority.value,
-                        isCompleted = _state.value.isTaskCompleted
+                        isCompleted = _state.value.isTaskCompleted,
+                        isScheduled = _state.value.isScheduled
                     )
                 )
 
@@ -169,7 +170,8 @@ class AddTaskViewModel @Inject constructor(
                         dueTime = task.dueTime,
                         priority = Priority.fromInt(task.priority),
                         isTaskCompleted = task.isCompleted,
-                        currentTaskId = task.taskId
+                        currentTaskId = task.taskId,
+                        isScheduled = task.isScheduled
                     )
                 }
             }

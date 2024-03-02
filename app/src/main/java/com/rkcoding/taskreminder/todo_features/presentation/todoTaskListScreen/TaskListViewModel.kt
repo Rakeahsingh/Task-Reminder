@@ -1,5 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
+import android.os.Build
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,15 +10,19 @@ import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,23 +63,57 @@ class TaskListViewModel @Inject constructor(
 
             is TaskListEvent.OnTaskCompleteChange -> updateTask(event.task)
 
-//            is TaskListEvent.OnSwitchValueChange -> {
-//                switchChange(event.alarmItem)
-//            }
+            is TaskListEvent.OnSwitchValueChange -> {
+                switchChange(event.task)
+            }
 
         }
     }
 
-//    private fun switchChange(alarmItem: AlarmItem) {
-//        viewModelScope.launch {
-//            alarmScheduler.schedule(
-//                AlarmItem(
-//                    alarmTime = alarmItem.alarmTime,
-//                    message = "Alarm Schedule"
-//                )
-//            )
-//        }
-//    }
+    private fun switchChange(task: Task) {
+        viewModelScope.launch {
+            try {
+                val alarmDeferred = async {
+                    repository.addTask(
+                        task.copy(isScheduled = !task.isScheduled)
+                    )
+                }
+                alarmScheduler.schedule(
+                    AlarmItem(
+                        alarmTime = getLocalDateTime(task.dueDate, task.dueTime),
+                        message = task.description
+                    )
+                )
+                alarmDeferred.await()
+                if (task.isScheduled){
+                    _uiEvent.send(
+                        UiEvent.ShowSnackBar(
+                            message = "Alarm is Schedule",
+                            duration = SnackbarDuration.Short
+                        )
+                    )
+                }else{
+                    _uiEvent.send(
+                        UiEvent.ShowSnackBar(
+                            message = "Alarm is Cancel",
+                            duration = SnackbarDuration.Short
+                        )
+                    )
+                }
+
+
+            }catch (e: Exception){
+                _uiEvent.send(
+                    UiEvent.ShowSnackBar(
+                        message = "Alarm can't be Schedule",
+                        duration = SnackbarDuration.Short
+                    )
+                )
+            }
+
+        }
+    }
+
 
     private fun updateTask(task: Task) {
         viewModelScope.launch {
@@ -132,7 +171,7 @@ class TaskListViewModel @Inject constructor(
     private suspend fun getTask(){
         _state.update {
             it.copy(
-                isLoading = false
+                isLoading = true
             )
         }
         viewModelScope.launch {
@@ -145,6 +184,22 @@ class TaskListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getLocalDateTime(dueDate: Long, dueTime: String): LocalDateTime {
+        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            DateTimeFormatter.ofPattern("HH:mm")
+        } else {
+            TODO("VERSION.SDK_INT < O")
+        }
+        val timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+
+        // Convert dueDate to LocalDateTime
+        val dueDateTime = LocalDateTime.ofEpochSecond(dueDate / 1000, 0, ZoneOffset.UTC)
+
+        // Parse dueTime and combine with dueDate
+        val localTime = LocalTime.parse(dueTime, dateFormatter)
+        return LocalDateTime.of(dueDateTime.toLocalDate(), localTime)
     }
 
 }

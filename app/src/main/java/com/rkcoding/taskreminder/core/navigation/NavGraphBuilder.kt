@@ -76,15 +76,14 @@ fun NavGraphBuilder(
             }),
             arguments = listOf(
                 navArgument("taskId"){
-                    type = NavType.IntType
-                    defaultValue = -1
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )
         ){
-            val taskId = it.arguments?.getInt("taskId") ?: -1
+            val taskId = it.arguments?.getInt("taskId") ?: ""
             AddTaskScreen(
-                navController = navController,
-                taskId = taskId
+                navController = navController
             )
         }
 

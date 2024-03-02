@@ -91,10 +91,6 @@ fun TaskListScreen(
     viewModel: TaskListViewModel = hiltViewModel()
 ) {
 
-//    val context = LocalContext.current
-//    val scheduler = AlarmSchedulerImpl(context)
-//    var alarmItem: AlarmItem? = null
-
     val state by viewModel.state.collectAsState()
 
     // coroutine scope
@@ -123,10 +119,6 @@ fun TaskListScreen(
         onDismissRequest = { showSinOutDialog = false },
         confirmText = "SinOut"
         )
-
-    // Switch state
-    var switchState by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(key1 = Unit){
         viewModel.uiEvent.collectLatest { event ->
@@ -237,17 +229,17 @@ fun TaskListScreen(
                     val dismissState = rememberDismissState()
 
                     // check if user Swipe
-                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart)){
+                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart))
                         viewModel.onEvent(TaskListEvent.DeleteTask(task))
-                        scope.launch {
-                            val result = snackBarState.showSnackbar(
-                                message = "Task Deleted",
-                                actionLabel = "Undo",
-                                duration = SnackbarDuration.Short
-                            )
-                            if (result == SnackbarResult.ActionPerformed){
-                                viewModel.onEvent(TaskListEvent.RestoreTask)
-                            }
+
+                    scope.launch {
+                        val result = snackBarState.showSnackbar(
+                            message = "Task Deleted",
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed){
+                            viewModel.onEvent(TaskListEvent.RestoreTask)
                         }
                     }
 
@@ -294,28 +286,12 @@ fun TaskListScreen(
                                         route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
                                     )
                                 },
-//                                onDeleteTaskClick = {
-//                                    viewModel.onEvent(TaskListEvent.DeleteTask(task))
-//
-//                                },
                                 onCheckBoxClick = {
                                     viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
                                 },
-                                switchState = switchState,
+                                switchState = task.isScheduled,
                                 onSwitchValueChange = {
-//                                    if (!switchState){
-//                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                                        alarmItem = AlarmItem(
-//                                            alarmTime = task.dueTime,
-//                                            message = ""
-//                                        )
-//                                            alarmItem?.let { scheduler::schedule }
-//                                    }
-//                                    else{
-//                                        alarmItem?.let(scheduler::cancel)
-//                                    }
-//                                    }
-//
+                                    viewModel.onEvent(TaskListEvent.OnSwitchValueChange(task))
                                 }
                             )
                         }

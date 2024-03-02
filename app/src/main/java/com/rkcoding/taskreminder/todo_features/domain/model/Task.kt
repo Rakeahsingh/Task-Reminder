@@ -9,5 +9,6 @@ data class Task(
     val dueDate: Long,
     val dueTime: String,
     val priority: Int,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val isScheduled: Boolean
 )

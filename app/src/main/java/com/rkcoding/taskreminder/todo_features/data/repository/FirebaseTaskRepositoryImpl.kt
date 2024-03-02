@@ -40,7 +40,8 @@ class FirebaseTaskRepositoryImpl(
                     dueDate = document.getLong("dueDate") ?: 0L,
                     dueTime = document.getString("dueTime") ?: "",
                     priority = document.getLong("priority")?.toInt() ?: 1,
-                    isCompleted = document.getBoolean("isCompleted") ?: false
+                    isCompleted = document.getBoolean("isCompleted") ?: false,
+                    isScheduled = document.getBoolean("scheduled") ?: false
                 )
             }.reversed()
     }
@@ -75,7 +76,7 @@ class FirebaseTaskRepositoryImpl(
         }.await()
     }
 
-    override suspend fun getTaskById(id: Int): Task? {
+    override suspend fun getTaskById(id: String): Task? {
         val userId = firebaseAuth.currentUser?.uid ?: return null
 
         try {
@@ -97,8 +98,9 @@ class FirebaseTaskRepositoryImpl(
                 val dueTime = document.getString("dueTime") ?: ""
                 val priority = document.getLong("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
+                val isScheduled = document.getBoolean("scheduled") ?: false
 
-                return Task(taskId, title, description, dueDate, dueTime, priority, isCompleted)
+                return Task(taskId, title, description, dueDate, dueTime, priority, isCompleted, isScheduled)
 
             }else{
                 return null
@@ -133,8 +135,9 @@ class FirebaseTaskRepositoryImpl(
                 val dueTime = document.getString("dueTime") ?: ""
                 val priority = document.getLong("priority")?.toInt() ?: 1
                 val isCompleted = document.getBoolean("completed") ?: false
+                val isScheduled = document.getBoolean("scheduled") ?: false
 
-                val task = Task(taskId, title, description, dueDate, dueTime, priority, isCompleted)
+                val task = Task(taskId, title, description, dueDate, dueTime, priority, isCompleted, isScheduled)
                 Log.d("TAG", "realTimeTaskData: ${task.taskId}")
                 tasks.add(task)
             }
