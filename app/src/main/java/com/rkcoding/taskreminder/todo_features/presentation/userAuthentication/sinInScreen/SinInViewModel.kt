@@ -1,4 +1,4 @@
-package com.rkcoding.taskreminder.todo_features.presentation.sinInScreen
+package com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinInScreen
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel

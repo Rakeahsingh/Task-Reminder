@@ -1,4 +1,4 @@
-package com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component
+package com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinInScreen.component
 
 import android.content.Context
 import android.content.Intent

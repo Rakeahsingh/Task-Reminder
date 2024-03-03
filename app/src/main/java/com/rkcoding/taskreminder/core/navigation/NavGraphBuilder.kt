@@ -13,10 +13,11 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
-import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.SinInScreen
-import com.rkcoding.taskreminder.todo_features.presentation.sinInScreen.component.GoogleAuthUiClient
+import com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinInScreen.SinInScreen
+import com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinInScreen.component.GoogleAuthUiClient
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.AddTaskScreen
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.TaskListScreen
+import com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinupScreen.SinUpScreen
 import kotlinx.coroutines.launch
 
 
@@ -49,6 +50,13 @@ fun NavGraphBuilder(
         composable(Screen.SinInScreen.route){
 
             SinInScreen(
+                navController = navController
+            )
+        }
+
+        composable(Screen.SinUpScreen.route){
+
+            SinUpScreen(
                 navController = navController
             )
         }

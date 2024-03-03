@@ -229,17 +229,18 @@ fun TaskListScreen(
                     val dismissState = rememberDismissState()
 
                     // check if user Swipe
-                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart))
+                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart)){
                         viewModel.onEvent(TaskListEvent.DeleteTask(task))
 
-                    scope.launch {
-                        val result = snackBarState.showSnackbar(
+                        scope.launch {
+                            val result = snackBarState.showSnackbar(
                             message = "Task Deleted",
                             actionLabel = "Undo",
                             duration = SnackbarDuration.Short
-                        )
-                        if (result == SnackbarResult.ActionPerformed){
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
                             viewModel.onEvent(TaskListEvent.RestoreTask)
+                            }
                         }
                     }
 

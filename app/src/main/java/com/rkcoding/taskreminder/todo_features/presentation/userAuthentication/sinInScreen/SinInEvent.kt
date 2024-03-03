@@ -1,4 +1,4 @@
-package com.rkcoding.taskreminder.todo_features.presentation.sinInScreen
+package com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinInScreen
 
 import com.rkcoding.taskreminder.todo_features.domain.model.SinInResult
 

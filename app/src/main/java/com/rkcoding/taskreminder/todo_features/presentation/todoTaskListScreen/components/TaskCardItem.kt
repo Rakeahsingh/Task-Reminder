@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,8 +25,7 @@ import com.rkcoding.taskreminder.core.utils.toDateFormat
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.Priority
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.TaskCheckBox
-
-
+import com.rkcoding.taskreminder.ui.theme.DarkPurple
 
 
 @Composable
@@ -96,7 +96,10 @@ fun TaskCardItem(
 
             Switch(
                 checked = switchState,
-                onCheckedChange = { onSwitchValueChange() }
+                onCheckedChange = { onSwitchValueChange() },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = DarkPurple
+                )
             )
 
         }
