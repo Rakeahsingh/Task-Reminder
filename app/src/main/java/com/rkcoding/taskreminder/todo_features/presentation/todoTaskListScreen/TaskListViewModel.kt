@@ -1,6 +1,7 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +45,7 @@ class TaskListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.realTimeTaskData()
+//            repository.getTask()
             getTask()
         }
     }
@@ -78,21 +80,31 @@ class TaskListViewModel @Inject constructor(
                         task.copy(isScheduled = !task.isScheduled)
                     )
                 }
-                alarmScheduler.schedule(
-                    AlarmItem(
-                        alarmTime = getLocalDateTime(task.dueDate, task.dueTime),
-                        message = task.description
+                if (!task.isScheduled){
+                    alarmScheduler.schedule(
+                        AlarmItem(
+                            alarmTime = getLocalDateTime(task.dueDate, task.dueTime),
+                            message = task.description
+                        )
+
+
                     )
-                )
-                alarmDeferred.await()
-                if (task.isScheduled){
                     _uiEvent.send(
                         UiEvent.ShowSnackBar(
-                            message = "Alarm is Schedule",
+                            message = "Alarm is Scheduled",
                             duration = SnackbarDuration.Short
                         )
                     )
-                }else{
+                }
+
+                alarmDeferred.await()
+                if (task.isScheduled){
+                    alarmScheduler.cancel(
+                        AlarmItem(
+                            alarmTime = getLocalDateTime(task.dueDate, task.dueTime),
+                            message = task.description
+                        )
+                    )
                     _uiEvent.send(
                         UiEvent.ShowSnackBar(
                             message = "Alarm is Cancel",
@@ -171,7 +183,7 @@ class TaskListViewModel @Inject constructor(
     private suspend fun getTask(){
         _state.update {
             it.copy(
-                isLoading = true
+                isLoading = false
             )
         }
         viewModelScope.launch {
@@ -187,11 +199,8 @@ class TaskListViewModel @Inject constructor(
     }
 
     private fun getLocalDateTime(dueDate: Long, dueTime: String): LocalDateTime {
-        val dateFormatter = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            DateTimeFormatter.ofPattern("HH:mm")
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
+        val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
         val timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
         // Convert dueDate to LocalDateTime

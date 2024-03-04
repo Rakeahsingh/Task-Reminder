@@ -21,11 +21,8 @@ class AlarmSchedulerImpl(
         val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
-        val alarmTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            alarmItem.alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
+        val alarmTime = alarmItem.alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
+
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             alarmItem.hashCode(),

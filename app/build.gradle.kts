@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.rkcoding.taskreminder"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -72,22 +72,22 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //  Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-analytics")
 
     // FirebaseAuth
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
 
     // FireStore
-    implementation("com.google.firebase:firebase-firestore:24.10.2")
+    implementation("com.google.firebase:firebase-firestore:24.10.3")
 
     // Hilt
     implementation ("com.google.dagger:hilt-android:2.48")
     kapt ("com.google.dagger:hilt-compiler:2.48")
-    kapt ("androidx.hilt:hilt-compiler:1.1.0")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.1.0")
+    kapt ("androidx.hilt:hilt-compiler:1.2.0")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
 
    // viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
@@ -97,6 +97,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     //Icons
-    implementation ("androidx.compose.material:material-icons-extended:1.6.1")
+    implementation ("androidx.compose.material:material-icons-extended:1.6.2")
 
 }
