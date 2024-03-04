@@ -22,6 +22,15 @@ class AlarmSchedulerImpl(
         intent.putExtra("TASK_REMINDER", alarmItem.message)
 
         val alarmTime = alarmItem.alarmTime.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
+        val currentTimeMillis = System.currentTimeMillis()
+
+        // Check if the alarm time is before or equal to the current time
+        if (alarmTime <= currentTimeMillis){
+            // Alarm time is in the past or equal to current time, do not schedule the alarm
+            Log.d("Alarm", "schedule: Alarm time is before or equal to current time. Alarm not scheduled.")
+
+            return
+        }
 
         val pendingIntent = PendingIntent.getBroadcast(
             context,

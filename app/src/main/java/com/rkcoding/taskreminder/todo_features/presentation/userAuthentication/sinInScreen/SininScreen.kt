@@ -260,9 +260,11 @@ fun SinInScreen(
                 },
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable {
-                    navController.navigate(Screen.SinUpScreen.route)
-                }
+                modifier = Modifier.clickable(
+                    onClick = {
+                        navController.navigate(Screen.SinUpScreen.route)
+                    }
+                )
             )
 
         }

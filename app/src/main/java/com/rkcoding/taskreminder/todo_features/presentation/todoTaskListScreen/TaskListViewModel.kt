@@ -86,8 +86,6 @@ class TaskListViewModel @Inject constructor(
                             alarmTime = getLocalDateTime(task.dueDate, task.dueTime),
                             message = task.description
                         )
-
-
                     )
                     _uiEvent.send(
                         UiEvent.ShowSnackBar(

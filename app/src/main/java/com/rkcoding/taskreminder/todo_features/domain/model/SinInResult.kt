@@ -9,5 +9,7 @@ data class SinInResult(
 data class UserData(
     val userId: String,
     val userName: String?,
+    val userEmail: String?,
+    val userPassword: String?,
     val profileImageUrl: String?
 )

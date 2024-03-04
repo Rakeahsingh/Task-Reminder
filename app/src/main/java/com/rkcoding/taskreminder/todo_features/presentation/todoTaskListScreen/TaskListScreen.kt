@@ -131,6 +131,7 @@ fun TaskListScreen(
                         duration = event.duration
                     )
                 }
+
             }
         }
     }
