@@ -68,6 +68,7 @@ fun NavGraphBuilder(
                 onSinOut = {
                     scope.launch {
                         googleAuthUiClient.sinOut()
+                        firebaseAuth.signOut()
                         Toast.makeText(context, "SinOut Successfully", Toast.LENGTH_SHORT).show()
                         navController.navigate(Screen.SinInScreen.route)
                     }

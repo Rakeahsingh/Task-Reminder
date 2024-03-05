@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,6 +38,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -65,6 +67,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -90,12 +93,13 @@ fun SinInScreen(
 
     val state by viewModel.state.collectAsState()
 
-
     val context = LocalContext.current
 
     val scope = rememberCoroutineScope()
 
     val snackBarState = remember { SnackbarHostState() }
+
+    var isVisible by remember { mutableStateOf(false) }
 
     val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
@@ -103,12 +107,6 @@ fun SinInScreen(
             onTapClient = Identity.getSignInClient(context)
         )
     }
-
-    // email text
-    var email by remember { mutableStateOf("") }
-
-    // password
-    var password by remember { mutableStateOf("") }
 
 
     val launcher = rememberLauncherForActivityResult(
@@ -119,7 +117,7 @@ fun SinInScreen(
                     val signInResult = googleAuthUiClient.sinInWithIntent(
                         intent = result.data ?: return@launch
                     )
-                    viewModel.onEvent(SinInEvent.SinInButtonClick(signInResult))
+                    viewModel.onEvent(SinInEvent.GoogleSinInButtonClick(signInResult))
                 }
             }
         }
@@ -127,7 +125,7 @@ fun SinInScreen(
 
 
     LaunchedEffect(key1 = state.isSinInSuccess){
-        viewModel.snackBarEvent.collectLatest { event ->
+        viewModel.uiEvent.collectLatest { event ->
             when(event){
                 UiEvent.NavigateUp -> Unit
 
@@ -187,8 +185,10 @@ fun SinInScreen(
 
 
             OutlinedTextField(
-               value = email,
-               onValueChange = { email = it },
+               value = state.userEmail,
+               onValueChange = {
+                   viewModel.onEvent(SinInEvent.OnEmailValueChange(it))
+               },
                label = {
                        Text(text = "Enter Email")
                },
@@ -205,8 +205,10 @@ fun SinInScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = state.userPassword,
+                onValueChange = {
+                     viewModel.onEvent(SinInEvent.OnPasswordValueChange(it))
+                },
                 label = {
                     Text(text = "Enter Password")
                 },
@@ -216,12 +218,19 @@ fun SinInScreen(
                     Icon(imageVector = Icons.Default.Lock, contentDescription = "person icon")
                 },
                 trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Visibility,
-                        contentDescription = "password visible icon"
-                    )
+                    IconButton(
+                        onClick = { isVisible = !isVisible }
+                    ) {
+                        Icon(
+                            imageVector = if (isVisible) Icons.Default.VisibilityOff
+                            else Icons.Default.Visibility,
+                            contentDescription = if (isVisible) "hide icon" else "show icon"
+                        )
+                    }
+
                 },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (isVisible) VisualTransformation.None
+                else PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
@@ -230,7 +239,9 @@ fun SinInScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    viewModel.onEvent(SinInEvent.SinInButtonClick)
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = CustomPurple
                 )

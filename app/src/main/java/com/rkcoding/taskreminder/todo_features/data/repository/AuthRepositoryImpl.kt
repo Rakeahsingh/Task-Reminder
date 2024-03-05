@@ -1,7 +1,13 @@
 package com.rkcoding.taskreminder.todo_features.data.repository
 
+import android.util.Log
 import androidx.core.net.toUri
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
 import com.rkcoding.taskreminder.todo_features.domain.repository.AuthRepository
@@ -34,6 +40,12 @@ class AuthRepositoryImpl(
         }catch (e: Exception){
             e.printStackTrace()
             Result.failure(e)
+        }catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(Exception("User does not exist"))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(Exception("Invalid Google credentials"))
+        } catch (e: FirebaseException) {
+            Result.failure(Exception(e.localizedMessage ?: "Google Login Failed"))
         }
     }
 
@@ -57,12 +69,19 @@ class AuthRepositoryImpl(
 
                 user.updateProfile(profileInfo).await()
                 Result.success(user.uid)
+
             } else {
                 Result.failure(Exception("user is null"))
             }
         } catch (e: Exception) {
             e.printStackTrace()
             return Result.failure(e)
+        } catch (e: FirebaseAuthUserCollisionException) {
+            return Result.failure(Exception("Email is already in use"))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            return Result.failure(Exception("Invalid email or password"))
+        } catch (e: FirebaseAuthEmailException) {
+            return Result.failure(Exception("Invalid email format"))
         }
     }
 }

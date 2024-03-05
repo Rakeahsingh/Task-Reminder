@@ -1,5 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.presentation.userAuthentication.sinupScreen
 
+import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,41 +75,53 @@ class SinUpViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
 
             try {
+
                 if (_state.value.userPassword != _state.value.userConfirmPassword){
-                    return@launch
-                }else{
-                    repository.registerUserWithEmailPassword(
-                        name = _state.value.userName,
-                        email = _state.value.userEmail,
-                        password = _state.value.userPassword,
-                        profileUri = _state.value.userProfileImage
+                    _uiEvent.send(
+                        UiEvent.ShowSnackBar(
+                            message = "Enter same password and confirmPassword...",
+                            duration = SnackbarDuration.Short
+                        )
                     )
-                        .onSuccess {
-                            _state.update { it.copy(isLoading = false) }
-                            _uiEvent.send(
-                                UiEvent.ShowSnackBar(
-                                    message = "SinUp Successfully",
-                                    duration = SnackbarDuration.Short
-                                )
+                    return@launch
+                }
+
+                repository.registerUserWithEmailPassword(
+                    name = _state.value.userName,
+                    email = _state.value.userEmail,
+                    password = _state.value.userPassword,
+                    profileUri = _state.value.userProfileImage
+                )
+                    .onSuccess {
+                        _state.update { it.copy(isLoading = false) }
+
+                        _uiEvent.send(
+                            UiEvent.NavigateTo
+                        )
+
+                        _uiEvent.send(
+                            UiEvent.ShowSnackBar(
+                                message = "SinUp Successfully...",
+                                duration = SnackbarDuration.Short
                             )
-                            _uiEvent.send(
-                                UiEvent.NavigateTo
+                        )
+
+                    }
+                    .onFailure { exception ->
+                        Log.e("YourTag", "SinUp Failed with error", exception)
+                        _state.update { it.copy(isLoading = false) }
+                        _uiEvent.send(
+                            UiEvent.ShowSnackBar(
+                                message = "SinUp Failed with error...",
+                                duration = SnackbarDuration.Short
                             )
-                        }
-                        .onFailure {
-                            _state.update { it.copy(isLoading = false) }
-                            _uiEvent.send(
-                                UiEvent.ShowSnackBar(
-                                    message = "SinUp Failed",
-                                    duration = SnackbarDuration.Short
-                                )
-                            )
-                        }
+                        )
+
                 }
             }catch (e: Exception){
                 _uiEvent.send(
                     UiEvent.ShowSnackBar(
-                        message = "SinUp Failed",
+                        message = "SinUp Failed...",
                         duration = SnackbarDuration.Short
                     )
                 )

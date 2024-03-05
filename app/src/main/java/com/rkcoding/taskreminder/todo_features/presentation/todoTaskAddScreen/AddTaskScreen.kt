@@ -119,13 +119,9 @@ fun AddTaskScreen(
     val snackBarState = remember { SnackbarHostState() }
 
     // Task Date picker state
-    val datePickerState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        rememberDatePickerState(
+    val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = Instant.now().toEpochMilli()
         )
-    } else {
-        TODO("VERSION.SDK_INT < O")
-    }
 
     // show Delete Dialog
      DialogBox(
