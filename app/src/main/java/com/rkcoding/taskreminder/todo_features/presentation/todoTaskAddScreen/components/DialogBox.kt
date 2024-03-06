@@ -1,7 +1,6 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
+
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text

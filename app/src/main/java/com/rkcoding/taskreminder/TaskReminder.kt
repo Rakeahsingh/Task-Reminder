@@ -15,15 +15,12 @@ class TaskReminder: Application() {
         super.onCreate()
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel =
             NotificationChannel(
                 Constants.NOTIFICATION_CHANNEL_ID,
                 Constants.NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             )
-        } else {
-            TODO("VERSION.SDK_INT < O")
-        }
         notificationManager.createNotificationChannel(channel)
     }
 

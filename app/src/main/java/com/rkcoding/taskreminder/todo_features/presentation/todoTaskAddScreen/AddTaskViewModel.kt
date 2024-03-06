@@ -4,7 +4,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
 import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository

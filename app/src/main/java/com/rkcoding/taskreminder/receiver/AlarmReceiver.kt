@@ -5,14 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Icon
 import androidx.core.app.NotificationCompat
-import com.google.android.play.integrity.internal.c
 import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.utils.Constants
-import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.Priority
 
 class AlarmReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -25,7 +20,7 @@ class AlarmReceiver: BroadcastReceiver() {
             val builder = NotificationCompat.Builder(cxt, Constants.NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.notificaton_info)
                 .setContentTitle("Task Reminder")
-                .setContentText("Notification send with message: $message")
+                .setContentText("Notification message: $message")
                 .setPriority(NotificationManager.IMPORTANCE_HIGH)
                 .setSound(defaultUri)
                 .setContentIntent(ServiceHelper.clickPendingIntent(cxt))

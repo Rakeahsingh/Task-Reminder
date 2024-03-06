@@ -1,15 +1,10 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.os.Build
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,42 +17,39 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GroupOff
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -69,20 +61,14 @@ import coil.compose.AsyncImage
 import com.rkcoding.taskreminder.R
 import com.rkcoding.taskreminder.core.navigation.Screen
 import com.rkcoding.taskreminder.core.utils.UiEvent
-import com.rkcoding.taskreminder.todo_features.data.repository.AlarmSchedulerImpl
-import com.rkcoding.taskreminder.todo_features.domain.model.AlarmItem
 import com.rkcoding.taskreminder.todo_features.domain.model.UserData
-import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.presentation.todoTaskAddScreen.components.DialogBox
-import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components.TaskCardItem
-import kotlinx.coroutines.async
+import com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components.TaskListItem
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 
 @SuppressLint("CoroutineCreationDuringComposition", "SuspiciousIndentation")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn( ExperimentalFoundationApi::class)
 @Composable
 fun TaskListScreen(
     userData: UserData?,
@@ -93,8 +79,8 @@ fun TaskListScreen(
 
     val state by viewModel.state.collectAsState()
 
-    // coroutine scope
-    val scope = rememberCoroutineScope()
+//    // coroutine scope
+//    val scope = rememberCoroutineScope()
 
     // show sinOut dialog state
     var showSinOutDialog by remember { mutableStateOf(false) }
@@ -105,6 +91,14 @@ fun TaskListScreen(
       // floating action button functionality
     val listState = rememberLazyListState()
     val isFabExtended by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
+
+    // category tab row state
+    val pagerState = rememberPagerState(pageCount = {2})
+    val category = listOf(
+        "All Tasks", "Incomplete Task", "Complete Task"
+    )
+    var selectedTab by remember { mutableIntStateOf(0) }
+
 
     // Show SinOut Dialog
     DialogBox(
@@ -155,7 +149,7 @@ fun TaskListScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (state.isLoading){
+            if (state.isLoading) {
                 CircularProgressIndicator()
             }
 
@@ -173,7 +167,7 @@ fun TaskListScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                if (userData?.profileImageUrl != null){
+                if (userData?.profileImageUrl != null) {
                     AsyncImage(
                         model = userData.profileImageUrl,
                         contentDescription = "profile image",
@@ -186,9 +180,39 @@ fun TaskListScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            if(state.tasks.isEmpty()){
+            TabRow(
+                selectedTabIndex = selectedTab,
+                modifier = Modifier.fillMaxWidth(),
+                containerColor = MaterialTheme.colorScheme.background,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+                indicator = { tabPosition ->
+                    TabRowDefaults.Indicator(
+                        Modifier.tabIndicatorOffset(tabPosition[selectedTab])
+                    )
+                }
+            ) {
+                category.forEachIndexed { index, category ->
+                    Tab(
+                        selected = pagerState.currentPage == index,
+                        onClick = { selectedTab = index },
+                        text = { Text(text = category) }
+                    )
+                }
+            }
+
+            HorizontalPager(
+                state = pagerState,
+                pageSize = PageSize.Fill,
+                beyondBoundsPageCount = category.size,
+                modifier = Modifier.weight(1f)
+            ) {
+
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (state.tasks.isEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
@@ -219,90 +243,113 @@ fun TaskListScreen(
                     .fillMaxSize()
                     .padding(4.dp),
                 contentPadding = PaddingValues(vertical = 8.dp)
-            ){
+            ) {
 
-                items(
-                    items = state.tasks,
-                    key = { task -> task.taskId}
-                ){ task ->
+//                items(
+//                    items = state.tasks,
+//                    key = { task -> task.taskId }
+//                ) { task ->
 
-                    // swipe to dismiss
-                    val dismissState = rememberDismissState()
+                when (selectedTab) {
 
-                    // check if user Swipe
-                    if(dismissState.isDismissed(direction = DismissDirection.EndToStart)){
-                        viewModel.onEvent(TaskListEvent.DeleteTask(task))
-
-                        scope.launch {
-                            val result = snackBarState.showSnackbar(
-                            message = "Task Deleted",
-                            actionLabel = "Undo",
-                            duration = SnackbarDuration.Short
-                            )
-                            if (result == SnackbarResult.ActionPerformed) {
-                            viewModel.onEvent(TaskListEvent.RestoreTask)
-                            }
+                    0 -> {
+                        items(state.tasks) { task ->
+                            TaskListItem(task = task, navController = navController)
                         }
                     }
 
-                    // swipe to delete functionality
-                    SwipeToDismiss(
-                        state = dismissState,
-                        directions = setOf(DismissDirection.EndToStart),
-                        background = {
-                            // background color
-                           val backgroundColor by animateColorAsState(
-                               when(dismissState.targetValue){
-                                   DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.8f)
-                                   else -> MaterialTheme.colorScheme.background
-                               },
-                               label = "background color animation"
-                           )
-                            // icon size
-                            val iconScale by animateFloatAsState(
-                                targetValue = if (dismissState.targetValue == DismissValue.DismissedToStart) 1.3f else 0.5f,
-                                label = "icon animation"
-                            )
-
-                            Box(
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(color = backgroundColor)
-                                    .padding(end = 16.dp), // inner padding
-                                contentAlignment = Alignment.CenterEnd // place the icon at the end (left)
-                            ) {
-                                Icon(
-                                    modifier = Modifier.scale(iconScale),
-                                    imageVector = Icons.Outlined.Delete,
-                                    contentDescription = "Delete",
-                                    tint = Color.White
-                                )
-                            }
-                        },
-                        dismissContent = {
-                            TaskCardItem(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                task = task,
-                                onTaskCardClick = {
-                                    navController.navigate(
-                                        route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
-                                    )
-                                },
-                                onCheckBoxClick = {
-                                    viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
-                                },
-                                switchState = task.isScheduled,
-                                onSwitchValueChange = {
-                                    viewModel.onEvent(TaskListEvent.OnSwitchValueChange(task))
-                                }
-                            )
+                    1 -> {
+                        items(state.tasks.filter { !it.isCompleted }) { task ->
+                            TaskListItem(task = task, navController = navController)
                         }
-                    )
+                    }
+
+                    2 -> {
+                        items(state.tasks.filter { it.isCompleted }) { task ->
+                            TaskListItem(task = task, navController = navController)
+                        }
+                    }
 
                 }
+
+//                    // swipe to dismiss
+//                    val dismissState = rememberDismissState()
+//
+//                    // check if user Swipe
+//                    if (dismissState.isDismissed(direction = DismissDirection.EndToStart)) {
+//                        viewModel.onEvent(TaskListEvent.DeleteTask(task))
+//
+//                        scope.launch {
+//                            val result = snackBarState.showSnackbar(
+//                                message = "Task Deleted",
+//                                actionLabel = "Undo",
+//                                duration = SnackbarDuration.Short
+//                            )
+//                            if (result == SnackbarResult.ActionPerformed) {
+//                                viewModel.onEvent(TaskListEvent.RestoreTask)
+//                            }
+//                        }
+//                    }
+//
+//                    // swipe to delete functionality
+//                    SwipeToDismiss(
+//                        state = dismissState,
+//                        directions = setOf(DismissDirection.EndToStart),
+//                        background = {
+//                            // background color
+//                            val backgroundColor by animateColorAsState(
+//                                when (dismissState.targetValue) {
+//                                    DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.8f)
+//                                    else -> MaterialTheme.colorScheme.background
+//                                },
+//                                label = "background color animation"
+//                            )
+//                            // icon size
+//                            val iconScale by animateFloatAsState(
+//                                targetValue = if (dismissState.targetValue == DismissValue.DismissedToStart) 1.3f else 0.5f,
+//                                label = "icon animation"
+//                            )
+//
+//                            Box(
+//                                Modifier
+//                                    .fillMaxSize()
+//                                    .background(color = backgroundColor)
+//                                    .padding(end = 16.dp), // inner padding
+//                                contentAlignment = Alignment.CenterEnd // place the icon at the end (left)
+//                            ) {
+//                                Icon(
+//                                    modifier = Modifier.scale(iconScale),
+//                                    imageVector = Icons.Outlined.Delete,
+//                                    contentDescription = "Delete",
+//                                    tint = Color.White
+//                                )
+//                            }
+//                        },
+//                        dismissContent = {
+//                            TaskCardItem(
+//                                modifier = Modifier.padding(vertical = 8.dp),
+//                                task = task,
+//                                onTaskCardClick = {
+//                                    navController.navigate(
+//                                        route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
+//                                    )
+//                                },
+//                                onCheckBoxClick = {
+//                                    viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
+//                                },
+//                                switchState = task.isScheduled,
+//                                onSwitchValueChange = {
+//                                    viewModel.onEvent(TaskListEvent.OnSwitchValueChange(task))
+//                                }
+//                            )
+//                        }
+//                    )
+
+            }
             }
 
         }
     }
 
 }
+

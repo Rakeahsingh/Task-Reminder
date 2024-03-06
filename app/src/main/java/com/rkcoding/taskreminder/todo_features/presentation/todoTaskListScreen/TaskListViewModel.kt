@@ -1,7 +1,5 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
-import android.os.Build
-import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +17,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -136,7 +133,7 @@ class TaskListViewModel @Inject constructor(
                 if (task.isCompleted){
                     _uiEvent.send(
                         UiEvent.ShowSnackBar(
-                            message = "Saved in Upcoming Task Section",
+                            message = "Saved in Incomplete Task Section",
                             duration = SnackbarDuration.Short
                         )
                     )
@@ -199,7 +196,7 @@ class TaskListViewModel @Inject constructor(
     private fun getLocalDateTime(dueDate: Long, dueTime: String): LocalDateTime {
         val dateFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-        val timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+//        val timeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
         // Convert dueDate to LocalDateTime
         val dueDateTime = LocalDateTime.ofEpochSecond(dueDate / 1000, 0, ZoneOffset.UTC)

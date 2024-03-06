@@ -1,6 +1,5 @@
 package com.rkcoding.taskreminder.todo_features.data.repository
 
-import android.util.Log
 import androidx.core.net.toUri
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth

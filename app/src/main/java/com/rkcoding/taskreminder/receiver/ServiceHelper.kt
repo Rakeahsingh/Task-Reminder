@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import androidx.compose.ui.unit.Constraints
 import androidx.core.net.toUri
 import com.rkcoding.taskreminder.MainActivity
 import com.rkcoding.taskreminder.core.utils.Constants
