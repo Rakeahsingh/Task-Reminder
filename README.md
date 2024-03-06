@@ -29,3 +29,6 @@ The Task Reminder App is a mobile application designed to help users manage and 
 
 ### Persistent Storage:
 - Alarms are stored locally on the device to persist across app restarts.
+
+# Screenshots
+![Screenshot 2024-03-06 132439](https://github.com/Rakeahsingh/Task-Reminder/assets/106171801/63c9845b-fd44-4cf2-bc97-3fbf4cc46708)
