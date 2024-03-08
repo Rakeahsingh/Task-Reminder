@@ -17,17 +17,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GroupOff
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -182,6 +183,25 @@ fun TaskListScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            OutlinedTextField(
+                value = state.search,
+                onValueChange = {
+                    viewModel.onEvent(TaskListEvent.OnSearchValueChange(it))
+                },
+                label = {
+                    Text(text = "Search...")
+                },
+                trailingIcon = {
+                    IconButton(
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+
             TabRow(
                 selectedTabIndex = selectedTab,
                 modifier = Modifier.fillMaxWidth(),
@@ -201,13 +221,6 @@ fun TaskListScreen(
                     )
                 }
             }
-
-            HorizontalPager(
-                state = pagerState,
-                pageSize = PageSize.Fill,
-                beyondBoundsPageCount = category.size,
-                modifier = Modifier.weight(1f)
-            ) {
 
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -245,107 +258,40 @@ fun TaskListScreen(
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
 
-//                items(
-//                    items = state.tasks,
-//                    key = { task -> task.taskId }
-//                ) { task ->
-
                 when (selectedTab) {
 
                     0 -> {
                         items(state.tasks) { task ->
-                            TaskListItem(task = task, navController = navController)
+                            TaskListItem(
+                                task = task,
+                                navController = navController,
+                                snackBarState = snackBarState
+                            )
                         }
                     }
 
                     1 -> {
                         items(state.tasks.filter { !it.isCompleted }) { task ->
-                            TaskListItem(task = task, navController = navController)
+                            TaskListItem(
+                                task = task,
+                                navController = navController,
+                                snackBarState = snackBarState
+                            )
                         }
                     }
 
                     2 -> {
                         items(state.tasks.filter { it.isCompleted }) { task ->
-                            TaskListItem(task = task, navController = navController)
+                            TaskListItem(
+                                task = task,
+                                navController = navController,
+                                snackBarState = snackBarState
+                            )
                         }
                     }
 
                 }
 
-//                    // swipe to dismiss
-//                    val dismissState = rememberDismissState()
-//
-//                    // check if user Swipe
-//                    if (dismissState.isDismissed(direction = DismissDirection.EndToStart)) {
-//                        viewModel.onEvent(TaskListEvent.DeleteTask(task))
-//
-//                        scope.launch {
-//                            val result = snackBarState.showSnackbar(
-//                                message = "Task Deleted",
-//                                actionLabel = "Undo",
-//                                duration = SnackbarDuration.Short
-//                            )
-//                            if (result == SnackbarResult.ActionPerformed) {
-//                                viewModel.onEvent(TaskListEvent.RestoreTask)
-//                            }
-//                        }
-//                    }
-//
-//                    // swipe to delete functionality
-//                    SwipeToDismiss(
-//                        state = dismissState,
-//                        directions = setOf(DismissDirection.EndToStart),
-//                        background = {
-//                            // background color
-//                            val backgroundColor by animateColorAsState(
-//                                when (dismissState.targetValue) {
-//                                    DismissValue.DismissedToStart -> Color.Red.copy(alpha = 0.8f)
-//                                    else -> MaterialTheme.colorScheme.background
-//                                },
-//                                label = "background color animation"
-//                            )
-//                            // icon size
-//                            val iconScale by animateFloatAsState(
-//                                targetValue = if (dismissState.targetValue == DismissValue.DismissedToStart) 1.3f else 0.5f,
-//                                label = "icon animation"
-//                            )
-//
-//                            Box(
-//                                Modifier
-//                                    .fillMaxSize()
-//                                    .background(color = backgroundColor)
-//                                    .padding(end = 16.dp), // inner padding
-//                                contentAlignment = Alignment.CenterEnd // place the icon at the end (left)
-//                            ) {
-//                                Icon(
-//                                    modifier = Modifier.scale(iconScale),
-//                                    imageVector = Icons.Outlined.Delete,
-//                                    contentDescription = "Delete",
-//                                    tint = Color.White
-//                                )
-//                            }
-//                        },
-//                        dismissContent = {
-//                            TaskCardItem(
-//                                modifier = Modifier.padding(vertical = 8.dp),
-//                                task = task,
-//                                onTaskCardClick = {
-//                                    navController.navigate(
-//                                        route = Screen.AddTaskScreen.route + "?taskId=${task.taskId}"
-//                                    )
-//                                },
-//                                onCheckBoxClick = {
-//                                    viewModel.onEvent(TaskListEvent.OnTaskCompleteChange(task))
-//                                },
-//                                switchState = task.isScheduled,
-//                                onSwitchValueChange = {
-//                                    viewModel.onEvent(TaskListEvent.OnSwitchValueChange(task))
-//                                }
-//                            )
-//                        }
-//                    )
-
-            }
             }
 
         }

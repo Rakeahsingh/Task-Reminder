@@ -1,6 +1,7 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -40,21 +41,22 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListItem(
+    snackBarState: SnackbarHostState,
     task: Task,
     viewModel: TaskListViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
 
     val scope = rememberCoroutineScope()
-    val snackBarState = remember { SnackbarHostState() }
-
 
     // swipe to dismiss
     val dismissState = rememberDismissState()
 
     // check if user Swipe
     if (dismissState.isDismissed(direction = DismissDirection.EndToStart)) {
+
         viewModel.onEvent(TaskListEvent.DeleteTask(task))
+
 
         scope.launch {
             val result = snackBarState.showSnackbar(

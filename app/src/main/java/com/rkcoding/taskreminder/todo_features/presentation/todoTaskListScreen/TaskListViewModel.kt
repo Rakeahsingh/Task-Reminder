@@ -9,8 +9,10 @@ import com.rkcoding.taskreminder.todo_features.domain.model.Task
 import com.rkcoding.taskreminder.todo_features.domain.repository.AlarmScheduler
 import com.rkcoding.taskreminder.todo_features.domain.repository.FirebaseTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -37,6 +39,8 @@ class TaskListViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
 
     private var recentDeletedTask : Task? = null
+
+    private var searchJob: Job? = null
 
 
     init {
@@ -66,6 +70,23 @@ class TaskListViewModel @Inject constructor(
                 switchChange(event.task)
             }
 
+            TaskListEvent.OnSearchIconClick -> {
+                onSearch()
+            }
+            is TaskListEvent.OnSearchValueChange -> {
+                _state.update {
+                    it.copy(
+                        search = event.text
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onSearch() {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(500)
         }
     }
 
@@ -176,12 +197,8 @@ class TaskListViewModel @Inject constructor(
 
 
     private suspend fun getTask(){
-        _state.update {
-            it.copy(
-                isLoading = false
-            )
-        }
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
              repository.tasks.collectLatest { task ->
                 _state.update {
                    it.copy(

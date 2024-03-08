@@ -10,4 +10,8 @@ sealed class TaskListEvent {
 
     data class OnSwitchValueChange(val task: Task): TaskListEvent()
 
+    data class OnSearchValueChange(val text: String): TaskListEvent()
+
+    data object OnSearchIconClick: TaskListEvent()
+
 }

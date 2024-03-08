@@ -76,6 +76,7 @@ fun SinUpScreen(
     viewModel: SinUpViewModel = hiltViewModel()
 ) {
 
+    // select image from gallery state
     var selectImageUir by remember { mutableStateOf<Uri?>(null) }
 
     val state by viewModel.state.collectAsState()
@@ -102,7 +103,7 @@ fun SinUpScreen(
         else -> null
     }
 
-
+    // photo picker launcher from gallery
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {uri ->
