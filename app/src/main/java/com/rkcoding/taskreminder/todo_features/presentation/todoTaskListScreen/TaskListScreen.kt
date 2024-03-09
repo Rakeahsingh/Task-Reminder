@@ -197,10 +197,12 @@ fun TaskListScreen(
                     ) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
                     }
+
                 },
                 modifier = Modifier.fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
+
 
             TabRow(
                 selectedTabIndex = selectedTab,
