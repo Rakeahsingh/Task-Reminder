@@ -168,6 +168,7 @@ fun TaskListScreen(
                     fontWeight = FontWeight.Bold
                 )
 
+
                 if (userData?.profileImageUrl != null) {
                     AsyncImage(
                         model = userData.profileImageUrl,
@@ -180,6 +181,8 @@ fun TaskListScreen(
                     )
                 }
             }
+
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
