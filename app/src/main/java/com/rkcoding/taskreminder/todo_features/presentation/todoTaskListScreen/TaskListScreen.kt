@@ -1,6 +1,12 @@
 package com.rkcoding.taskreminder.todo_features.presentation.todoTaskListScreen
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -21,6 +27,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.GroupOff
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -100,6 +107,9 @@ fun TaskListScreen(
     )
     var selectedTab by remember { mutableIntStateOf(0) }
 
+    // search icon button function
+    var searchIconClick by remember { mutableStateOf(false) }
+
 
     // Show SinOut Dialog
     DialogBox(
@@ -158,14 +168,15 @@ fun TaskListScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+//                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Text(
                     text = "Task Reminder",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
                 )
 
 
@@ -180,31 +191,51 @@ fun TaskListScreen(
                             .clickable { showSinOutDialog = true }
                     )
                 }
+
+                IconButton(
+                    onClick = { searchIconClick = !searchIconClick }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription ="search icon"
+                    )
+                }
+
             }
 
 
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedTextField(
-                value = state.search,
-                onValueChange = {
-                    viewModel.onEvent(TaskListEvent.OnSearchValueChange(it))
-                },
-                label = {
-                    Text(text = "Search...")
-                },
-                trailingIcon = {
-                    IconButton(
-                        onClick = { /*TODO*/ }
-                    ) {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "search icon")
-                    }
+            AnimatedVisibility(
+                visible = searchIconClick,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                OutlinedTextField(
+                    value = state.search,
+                    onValueChange = {
+                        viewModel.onEvent(TaskListEvent.OnSearchValueChange(it))
+                    },
+                    label = {
+                        Text(text = "Search...")
+                    },
+                    trailingIcon = {
+                        IconButton(
+                            onClick = { searchIconClick = false }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "search icon"
+                            )
+                        }
 
-                },
-                modifier = Modifier.fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
+            }
 
 
             TabRow(

@@ -87,6 +87,7 @@ class TaskListViewModel @Inject constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(500)
+            repository.getTask()
         }
     }
 
