@@ -222,7 +222,9 @@ fun TaskListScreen(
                     },
                     trailingIcon = {
                         IconButton(
-                            onClick = { searchIconClick = false }
+                            onClick = {
+                                viewModel.onEvent(TaskListEvent.ClearSearchText)
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Clear,

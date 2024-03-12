@@ -12,6 +12,8 @@ sealed class TaskListEvent {
 
     data class OnSearchValueChange(val text: String): TaskListEvent()
 
-    data object OnSearchIconClick: TaskListEvent()
+//    data object OnSearchIconClick: TaskListEvent()
+
+    data object ClearSearchText: TaskListEvent()
 
 }

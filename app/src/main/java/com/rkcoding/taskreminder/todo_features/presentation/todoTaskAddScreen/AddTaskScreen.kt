@@ -191,9 +191,9 @@ fun AddTaskScreen(
         snackbarHost = { SnackbarHost(hostState = snackBarState) },
         topBar = {
             TaskTopBar(
-//                isTaskExits = state.currentTaskId != null ,
+//                isTaskExits = if (state.currentTaskId == null) false else true,
 //                isComplete = state.isTaskCompleted,
-//                checkBoxBorderColor = Color.Red,
+//                checkBoxBorderColor = state.priority.color,
                 onBackIconClick = { navController.popBackStack() },
 //                onCheckBoxClick = {
 //                    viewModel.onEvent(AddTaskEvent.IsTaskCompleted)

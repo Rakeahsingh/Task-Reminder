@@ -70,26 +70,31 @@ class TaskListViewModel @Inject constructor(
                 switchChange(event.task)
             }
 
-            TaskListEvent.OnSearchIconClick -> {
-                onSearch()
-            }
+
             is TaskListEvent.OnSearchValueChange -> {
                 _state.update {
                     it.copy(
                         search = event.text
                     )
                 }
+                searchJob?.cancel()
+                searchJob = viewModelScope.launch {
+                    delay(500)
+                    repository.getTask().find { it.title == event.text }
+                }
+            }
+
+            TaskListEvent.ClearSearchText -> {
+                _state.update {
+                    it.copy(
+                        search = " "
+                    )
+                }
             }
         }
     }
 
-    private fun onSearch() {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(500)
-            repository.getTask()
-        }
-    }
+
 
     private fun switchChange(task: Task) {
         viewModelScope.launch {
