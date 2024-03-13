@@ -46,7 +46,7 @@ class TaskListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             repository.realTimeTaskData()
-//            repository.getTask()
+            repository.getTask()
             getTask()
         }
     }
@@ -79,8 +79,8 @@ class TaskListViewModel @Inject constructor(
                 }
                 searchJob?.cancel()
                 searchJob = viewModelScope.launch {
-                    delay(500)
-                    repository.getTask().find { it.title == event.text }
+                    delay(1000)
+                    repository.getTask().find { it.title == _state.value.search }
                 }
             }
 
